@@ -3,6 +3,7 @@
 package com.internet.kael.ioc.context;
 
 import com.internet.kael.ioc.core.DefaultBeanFactory;
+import com.internet.kael.ioc.core.DefaultListableBeanFactory;
 import com.internet.kael.ioc.model.DefaultBeanDefinition;
 import com.internet.kael.ioc.util.ClassUtils;
 import com.internet.kael.ioc.util.JsonConverter;
@@ -18,7 +19,7 @@ import java.util.Objects;
  * @author Kael He(kael.he@alo7.com)
  * @since 1.0
  */
-public class JsonApplicationContext extends DefaultBeanFactory {
+public class JsonApplicationContext extends DefaultListableBeanFactory {
     private final String fileName;
 
     public JsonApplicationContext(String fileName) {

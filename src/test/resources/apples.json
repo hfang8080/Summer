@@ -1,0 +1,4 @@
+[
+  {"name":"apple","className":"com.internet.kael.ioc.bean.Apple"},
+  {"name":"apple2","className":"com.internet.kael.ioc.bean.Apple"}
+]
