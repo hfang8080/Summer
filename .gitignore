@@ -1,0 +1,16 @@
+### IntelliJ ###
+.classpath
+.project
+.settings/
+*.iml
+*.ipr
+*.iws
+.idea/
+
+### Gradle ###
+.gradle/
+build/
+out/
+bin/
+xxl-job/
+logs/
