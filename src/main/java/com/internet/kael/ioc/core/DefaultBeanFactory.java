@@ -3,9 +3,11 @@
 package com.internet.kael.ioc.core;
 
 import com.google.common.base.Preconditions;
+import com.internet.kael.ioc.constant.Scope;
 import com.internet.kael.ioc.exception.IocRuntimeException;
 import com.internet.kael.ioc.model.BeanDefinition;
 import com.internet.kael.ioc.util.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -31,16 +33,15 @@ public class DefaultBeanFactory implements BeanFactory {
      * @since 1.0
      */
     protected void registerBeanDefinition(final String beanName, final BeanDefinition beanDefinition) {
+        // 将BeanName -> BeanDefinition 定义存入Map
         beanDefinitionMap.put(beanName, beanDefinition);
-
-        // @since 2.0 类型信息
-        Class<?> type = getType(beanName);
-        if (!typeBeanNamesMap.containsKey(type)) {
-            typeBeanNamesMap.put(type, new HashSet<>());
+        // 注册Type -> BeanNames 存入Map
+        registerTypeBeanNames(beanName, beanDefinition);
+        boolean lazyInit = beanDefinition.isLazyInit();
+        if (!lazyInit) {
+            // 如果不是lazy的，默认创建单例Bean
+            registerSingletonBean(beanName, beanDefinition);
         }
-        Set<String> beanNames = typeBeanNamesMap.get(type);
-        beanNames.add(beanName);
-        typeBeanNamesMap.put(type, beanNames);
     }
 
     /**
@@ -58,18 +59,18 @@ public class DefaultBeanFactory implements BeanFactory {
     @Override
     public Object getBean(String beanName) {
         Preconditions.checkNotNull(beanName);
-        Object bean = beanMap.get(beanName);
-        if (Objects.nonNull(bean)) {
-            // 这里直接返回的是单例，如果用户指定为多例，则每次都需要新建。
-            return bean;
-        }
+        // 获取配置信息
         BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
         if (Objects.isNull(beanDefinition)) {
             throw new IocRuntimeException(beanName + " is not exists in bean definition.");
         }
-        Object instance = createBean(beanDefinition);
-        beanMap.put(beanName, instance);
-        return instance;
+        // 判断如果不是单例，则创建新对象
+        if (!StringUtils.equals(Scope.SINGLETON.getCode(), beanDefinition.getScope())) {
+            return createBean(beanDefinition);
+        }
+
+        // 单例的流程
+        return registerSingletonBean(beanName, beanDefinition);
     }
 
     @Override
@@ -110,5 +111,49 @@ public class DefaultBeanFactory implements BeanFactory {
         String className = beanDefinition.getClassName();
         Class clazz = ClassUtils.getClass(className);
         return ClassUtils.newInstance(clazz);
+    }
+
+    /**
+     * 注册单例对象，如果已经存在则直接返回
+     * @param beanName Bean名称
+     * @param bd 对象对应
+     * @return 3.0
+     */
+    private Object registerSingletonBean(final String beanName, final BeanDefinition bd) {
+        Object bean = beanMap.get(beanName);
+        if (Objects.isNull(bean)) {
+            Object instance = createBean(bd);
+            beanMap.put(beanName, instance);
+        }
+        return bean;
+    }
+
+    /**
+     * 获取类型信息
+     * @param beanDefinition Bean的定义
+     * @return Bean的类型
+     * @since 3.0
+     */
+    private Class getType(final BeanDefinition beanDefinition) {
+        String className = beanDefinition.getClassName();
+        return ClassUtils.getClass(className);
+    }
+
+    /**
+     * 注册类型及其对应的名称
+     * @param beanName Bean名称
+     * @param bd Bean定义
+     * @since 3.0
+     */
+    private void registerTypeBeanNames(final String beanName, final BeanDefinition bd) {
+        Class type = getType(bd);
+
+        // @since 2.0 类型信息
+        if (!typeBeanNamesMap.containsKey(type)) {
+            typeBeanNamesMap.put(type, new HashSet<>());
+        }
+        Set<String> beanNames = typeBeanNamesMap.get(type);
+        beanNames.add(beanName);
+        typeBeanNamesMap.put(type, beanNames);
     }
 }

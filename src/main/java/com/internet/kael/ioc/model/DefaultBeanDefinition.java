@@ -10,7 +10,8 @@ public class DefaultBeanDefinition implements BeanDefinition {
 
     private String name;
     private String className;
-
+    private String scope;
+    private boolean lazyInit;
 
     @Override
     public String getName() {
@@ -30,5 +31,25 @@ public class DefaultBeanDefinition implements BeanDefinition {
     @Override
     public void setClassName(String className) {
         this.className = className;
+    }
+
+    @Override
+    public String getScope() {
+        return scope;
+    }
+
+    @Override
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
+    @Override
+    public boolean isLazyInit() {
+        return lazyInit;
+    }
+
+    @Override
+    public void setLazyInit(boolean lazyInit) {
+        this.lazyInit = lazyInit;
     }
 }

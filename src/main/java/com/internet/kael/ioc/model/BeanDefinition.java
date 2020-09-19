@@ -38,4 +38,32 @@ public interface BeanDefinition {
      */
     void setClassName(final String className);
 
+    /**
+     * 获取作用域
+     * @return 作用域
+     * @since 3.0
+     */
+    String getScope();
+
+    /**
+     * 设置作用域
+     * @param scope 作用域
+     * @since 3.0
+     */
+    void setScope(final String scope);
+
+    /**
+     * 是否是延迟加载
+     * @return 是否
+     * @since 3.0
+     */
+    boolean isLazyInit();
+
+    /**
+     * 设置是否是延迟加载
+     * @param lazyInit 是否是延迟加载
+     * @since 3.0
+     */
+    void setLazyInit(final boolean lazyInit);
+
 }
