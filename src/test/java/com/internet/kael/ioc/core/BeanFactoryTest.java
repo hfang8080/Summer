@@ -44,16 +44,46 @@ public class BeanFactoryTest {
         System.out.println(JsonConverter.serialize(beanDefinitions));
     }
 
+    /**
+     *
+     * @since 1.0
+     */
     @Test
     public void getBeanByNameAndType() {
         Apple apple = BEAN_FACTORY.getBean("apple", Apple.class);
         apple.introduce();
     }
 
+    /**
+     *
+     * @since 1.0
+     */
     @Test
     public void containsBean() {
         Assert.assertTrue(BEAN_FACTORY.containsBean("apple"));
         Assert.assertFalse(BEAN_FACTORY.containsBean("other"));
+    }
+
+    /**
+     * @since 3.0
+     */
+    @Test
+    public void singletonBean() {
+        JsonApplicationContext ac = new JsonApplicationContext("singleton/apple-singleton.json");
+        Apple apple1 = ac.getBean("apple", Apple.class);
+        Apple apple2 = ac.getBean("apple", Apple.class);
+        Assert.assertSame(apple1, apple2);
+    }
+
+    /**
+     * @since 3.0
+     */
+    @Test
+    public void prototypeBean() {
+        JsonApplicationContext ac = new JsonApplicationContext("singleton/apple-prototype.json");
+        Apple apple1 = ac.getBean("apple", Apple.class);
+        Apple apple2 = ac.getBean("apple", Apple.class);
+        Assert.assertNotSame(apple1, apple2);
     }
 
 }
