@@ -12,6 +12,8 @@ public class DefaultBeanDefinition implements BeanDefinition {
     private String className;
     private String scope;
     private boolean lazyInit;
+    private String initMethodName;
+    private String destroyMethodName;
 
     @Override
     public String getName() {
@@ -51,5 +53,25 @@ public class DefaultBeanDefinition implements BeanDefinition {
     @Override
     public void setLazyInit(boolean lazyInit) {
         this.lazyInit = lazyInit;
+    }
+
+    @Override
+    public String getInitMethodName() {
+        return initMethodName;
+    }
+
+    @Override
+    public void setInitMethodName(String initMethodName) {
+        this.initMethodName = initMethodName;
+    }
+
+    @Override
+    public String getDestroyMethodName() {
+        return destroyMethodName;
+    }
+
+    @Override
+    public void setDestroyMethodName(String destroyMethodName) {
+        this.destroyMethodName = destroyMethodName;
     }
 }

@@ -6,6 +6,7 @@ import com.google.common.base.Preconditions;
 import com.internet.kael.ioc.constant.Scope;
 import com.internet.kael.ioc.exception.IocRuntimeException;
 import com.internet.kael.ioc.model.BeanDefinition;
+import com.internet.kael.ioc.support.DisposableBean;
 import com.internet.kael.ioc.util.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Kael He(kael.he@alo7.com)
  * @since 1.0
  */
-public class DefaultBeanFactory implements BeanFactory {
+public class DefaultBeanFactory implements BeanFactory, DisposableBean {
 
     private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
     private Map<String, Object> beanMap = new ConcurrentHashMap<>();
@@ -155,5 +156,12 @@ public class DefaultBeanFactory implements BeanFactory {
         Set<String> beanNames = typeBeanNamesMap.get(type);
         beanNames.add(beanName);
         typeBeanNamesMap.put(type, beanNames);
+    }
+
+    @Override
+    public void destroy() {
+        // 销毁所有的属性信息
+        System.out.println("Destroy all beans start.");
+
     }
 }

@@ -66,4 +66,32 @@ public interface BeanDefinition {
      */
     void setLazyInit(final boolean lazyInit);
 
+    /**
+     * 获取初始化的方法名
+     * @return 初始化的方法名
+     * @since 4.0
+     */
+    String getInitMethodName();
+
+    /**
+     * 设置初始化的方法名
+     * @param initMethodName 方法名
+     * @since 4.0
+     */
+    void setInitMethodName(String initMethodName);
+
+    /**
+     * 获取销毁的方法名
+     * @return 销毁的方法名
+     * @since 4.0
+     */
+    String getDestroyMethodName();
+
+    /**
+     * 设置销毁的方法名
+     * @param destroyMethodName 销毁的方法名
+     * @since 4.0
+     */
+    void setDestroyMethodName(String destroyMethodName);
+
 }
