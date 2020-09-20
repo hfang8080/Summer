@@ -5,6 +5,7 @@ package com.internet.kael.ioc.support;
 import com.internet.kael.ioc.exception.IocRuntimeException;
 import com.internet.kael.ioc.model.BeanDefinition;
 import com.internet.kael.ioc.util.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PreDestroy;
 import java.lang.reflect.InvocationTargetException;
@@ -60,6 +61,9 @@ public class DefaultDisposableBean implements DisposableBean {
 
     private void customDestroy() {
         String destroyMethodName = beanDefinition.getDestroyMethodName();
+        if (StringUtils.isEmpty(destroyMethodName)) {
+            return;
+        }
         Method method = null;
         try {
             method = bean.getClass().getMethod(destroyMethodName);

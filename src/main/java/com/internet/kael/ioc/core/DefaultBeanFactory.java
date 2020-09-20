@@ -3,14 +3,19 @@
 package com.internet.kael.ioc.core;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.internet.kael.ioc.constant.Scope;
 import com.internet.kael.ioc.exception.IocRuntimeException;
 import com.internet.kael.ioc.model.BeanDefinition;
+import com.internet.kael.ioc.support.DefaultDisposableBean;
+import com.internet.kael.ioc.support.DefaultInitialingBean;
 import com.internet.kael.ioc.support.DisposableBean;
 import com.internet.kael.ioc.util.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -25,6 +30,7 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
     private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
     private Map<String, Object> beanMap = new ConcurrentHashMap<>();
     private Map<Class, Set<String>> typeBeanNamesMap = new ConcurrentHashMap<>();
+    private List<Pair<Object, BeanDefinition>> instanceBeanDefinitionPairs = Lists.newArrayList();
 
     /**
      * 注册Bean
@@ -111,7 +117,14 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
     private Object createBean(final BeanDefinition beanDefinition) {
         String className = beanDefinition.getClassName();
         Class clazz = ClassUtils.getClass(className);
-        return ClassUtils.newInstance(clazz);
+        Object instance = ClassUtils.newInstance(clazz);
+
+        // @since 4.0
+        DefaultInitialingBean initialingBean = new DefaultInitialingBean(instance, beanDefinition);
+        // Do init for beans.
+        initialingBean.afterPropertiesSet();
+        instanceBeanDefinitionPairs.add(Pair.of(instance, beanDefinition));
+        return instance;
     }
 
     /**
@@ -158,10 +171,18 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
         typeBeanNamesMap.put(type, beanNames);
     }
 
+    /**
+     * 销毁所有属性
+     * @since 4.0
+     */
     @Override
     public void destroy() {
         // 销毁所有的属性信息
         System.out.println("Destroy all beans start.");
-
+        for (Pair<Object, BeanDefinition> pair : instanceBeanDefinitionPairs) {
+            DefaultDisposableBean disposableBean = new DefaultDisposableBean(pair.getLeft(), pair.getRight());
+            disposableBean.destroy();
+        }
+        System.out.println("Cleaning done.");
     }
 }

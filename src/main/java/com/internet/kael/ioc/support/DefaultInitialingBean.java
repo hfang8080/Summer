@@ -5,6 +5,7 @@ package com.internet.kael.ioc.support;
 import com.internet.kael.ioc.exception.IocRuntimeException;
 import com.internet.kael.ioc.model.BeanDefinition;
 import com.internet.kael.ioc.util.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.InvocationTargetException;
@@ -71,6 +72,9 @@ public class DefaultInitialingBean implements InitializingBean {
      */
     private void customInit() {
         String initMethodName = beanDefinition.getInitMethodName();
+        if (StringUtils.isEmpty(initMethodName)) {
+            return;
+        }
         Class<?> clazz = bean.getClass();
         try {
             Method method = clazz.getMethod(initMethodName);

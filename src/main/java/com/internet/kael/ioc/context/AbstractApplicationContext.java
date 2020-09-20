@@ -22,13 +22,30 @@ import java.util.Objects;
  * @since 4.0
  */
 public abstract class AbstractApplicationContext extends DefaultListableBeanFactory implements ApplicationContext {
-    private final String fileName;
+    protected final String fileName;
 
     public AbstractApplicationContext(String fileName) {
         this.fileName = fileName;
         init();
     }
 
+    /**
+     * 初始化Bean定义
+     *
+     * @since 4.0
+     */
+    protected void init() {
+        List<? extends DefaultBeanDefinition> beanDefinitions = buildBeanDefinitions();
+        registerBeanDefinitions(beanDefinitions);
+        registerShutdownHook();
+    }
+
+    /**
+     * 注册所有的Bean定义
+     *
+     * @param beanDefinitions 所有的Bean定义
+     * @since 4.0
+     */
     protected void registerBeanDefinitions(final List<? extends BeanDefinition> beanDefinitions) {
         if (CollectionUtils.isNotEmpty(beanDefinitions)) {
             for (BeanDefinition bd : beanDefinitions) {
@@ -38,12 +55,6 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
                 registerBeanDefinition(bd.getName(), bd);
             }
         }
-    }
-
-    protected void init() {
-        List<? extends DefaultBeanDefinition> beanDefinitions = buildBeanDefinitions();
-        registerBeanDefinitions(beanDefinitions);
-        
     }
 
     /**
@@ -63,6 +74,15 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
      * @since 4.0
      */
     protected abstract List<? extends DefaultBeanDefinition> buildBeanDefinitions();
+
+    /**
+     * 注册关闭的钩子
+     *
+     * @since 4.0
+     */
+    private void registerShutdownHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(this::destroy));
+    }
 
     @Override
     public String getApplicationName() {
