@@ -8,7 +8,6 @@ import com.internet.kael.ioc.util.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PreDestroy;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Optional;
@@ -19,11 +18,11 @@ import java.util.Optional;
  */
 public class DefaultDisposableBean implements DisposableBean {
 
-    private final Object bean;
+    private final Object instance;
     private final BeanDefinition beanDefinition;
 
-    public DefaultDisposableBean(Object bean, BeanDefinition beanDefinition) {
-        this.bean = bean;
+    public DefaultDisposableBean(Object instance, BeanDefinition beanDefinition) {
+        this.instance = instance;
         this.beanDefinition = beanDefinition;
     }
 
@@ -38,24 +37,20 @@ public class DefaultDisposableBean implements DisposableBean {
     }
 
     private void preDestroy() {
-        Optional<Method> optionalMethod = ClassUtils.getMethod(bean.getClass(), PreDestroy.class);
+        Optional<Method> optionalMethod = ClassUtils.getMethod(instance.getClass(), PreDestroy.class);
         if (optionalMethod.isPresent()) {
             Method method = optionalMethod.get();
             int count = method.getParameterCount();
             if (count > 0) {
                 throw new IocRuntimeException("Method under the @PostConstruct can not with any parameters.");
             }
-            try {
-                method.invoke(bean);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new IocRuntimeException(e);
-            }
+            ClassUtils.invokeNoArgsMethod(instance, method);
         }
     }
 
     private void disposeBean() {
-        if (bean instanceof DisposableBean) {
-            ((DisposableBean) bean).destroy();
+        if (instance instanceof DisposableBean) {
+            ((DisposableBean) instance).destroy();
         }
     }
 
@@ -66,10 +61,10 @@ public class DefaultDisposableBean implements DisposableBean {
         }
         Method method = null;
         try {
-            method = bean.getClass().getMethod(destroyMethodName);
+            method = instance.getClass().getMethod(destroyMethodName);
             if (Objects.isNull(method)) return;
-            method.invoke(bean);
-        } catch (NoSuchMethodException | IllegalAccessException |InvocationTargetException e) {
+            ClassUtils.invokeNoArgsMethod(instance, method);
+        } catch (NoSuchMethodException e) {
             throw new IocRuntimeException(e);
         }
     }

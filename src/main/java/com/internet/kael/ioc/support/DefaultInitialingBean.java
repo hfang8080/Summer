@@ -8,7 +8,6 @@ import com.internet.kael.ioc.util.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PostConstruct;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Optional;
@@ -18,11 +17,11 @@ import java.util.Optional;
  * @since 4.0
  */
 public class DefaultInitialingBean implements InitializingBean {
-    private final Object bean;
+    private final Object instance;
     private final BeanDefinition beanDefinition;
 
-    public DefaultInitialingBean(Object bean, BeanDefinition beanDefinition) {
-        this.bean = bean;
+    public DefaultInitialingBean(Object instance, BeanDefinition beanDefinition) {
+        this.instance = instance;
         this.beanDefinition = beanDefinition;
     }
 
@@ -41,18 +40,14 @@ public class DefaultInitialingBean implements InitializingBean {
      * @since 4.0
      */
     private void postConstruct() {
-        Optional<Method> optionalMethod = ClassUtils.getMethod(bean.getClass(), PostConstruct.class);
+        Optional<Method> optionalMethod = ClassUtils.getMethod(instance.getClass(), PostConstruct.class);
         if (optionalMethod.isPresent()) {
             Method method = optionalMethod.get();
             int count = method.getParameterCount();
             if (count > 0) {
                 throw new IocRuntimeException("Method under the @PostConstruct can not with any parameters.");
             }
-            try {
-                method.invoke(bean);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new IocRuntimeException(e);
-            }
+            ClassUtils.invokeNoArgsMethod(instance, method);
         }
     }
 
@@ -61,8 +56,8 @@ public class DefaultInitialingBean implements InitializingBean {
      * @since 4.0
      */
     private void afterPropertiesSetInvoke() {
-        if (bean instanceof InitializingBean) {
-            ((InitializingBean) bean).afterPropertiesSet();
+        if (instance instanceof InitializingBean) {
+            ((InitializingBean) instance).afterPropertiesSet();
         }
     }
 
@@ -75,14 +70,14 @@ public class DefaultInitialingBean implements InitializingBean {
         if (StringUtils.isEmpty(initMethodName)) {
             return;
         }
-        Class<?> clazz = bean.getClass();
+        Class<?> clazz = instance.getClass();
         try {
             Method method = clazz.getMethod(initMethodName);
             if (Objects.isNull(method)) {
                 return;
             }
-            method.invoke(bean);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            ClassUtils.invokeNoArgsMethod(instance, method);
+        } catch (NoSuchMethodException e) {
             throw new IocRuntimeException(e);
         }
     }
