@@ -7,6 +7,7 @@ import com.internet.kael.ioc.exception.IocRuntimeException;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
@@ -73,5 +74,24 @@ public class ClassUtils {
             }
         }
         return Optional.empty();
+    }
+
+    /**
+     * 反射调用指定实例的无参方法
+     * @param method 指定函数
+     * @param instance 指定实例
+     */
+    public static void invokeNoArgsMethod(Object instance, Method method) {
+        Preconditions.checkNotNull(method);
+        Preconditions.checkNotNull(instance);
+        int count = method.getParameterCount();
+        if (count > 0) {
+            throw new IocRuntimeException("Method can not with any parameters.");
+        }
+        try {
+            method.invoke(instance);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 }
