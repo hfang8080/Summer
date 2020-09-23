@@ -5,17 +5,10 @@ package com.internet.kael.ioc.context;
 import com.internet.kael.ioc.constant.Scope;
 import com.internet.kael.ioc.core.DefaultListableBeanFactory;
 import com.internet.kael.ioc.model.BeanDefinition;
-import com.internet.kael.ioc.model.DefaultBeanDefinition;
-import com.internet.kael.ioc.util.ClassUtils;
-import com.internet.kael.ioc.util.JsonConverter;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Kael He (kael.he@alo7.com)
@@ -35,7 +28,7 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
      * @since 4.0
      */
     protected void init() {
-        List<? extends DefaultBeanDefinition> beanDefinitions = buildBeanDefinitions();
+        List<? extends BeanDefinition> beanDefinitions = buildBeanDefinitions();
         registerBeanDefinitions(beanDefinitions);
         registerShutdownHook();
     }
@@ -73,7 +66,7 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
      * @return Bean定义的列表
      * @since 4.0
      */
-    protected abstract List<? extends DefaultBeanDefinition> buildBeanDefinitions();
+    protected abstract List<? extends BeanDefinition> buildBeanDefinitions();
 
     /**
      * 注册关闭的钩子

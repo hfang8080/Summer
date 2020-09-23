@@ -1,0 +1,3 @@
+[
+  {"name":"apple","className":"com.internet.kael.ioc.bean.Apple", "lazyInit": false, "factoryMethodName": "createBean"},
+]

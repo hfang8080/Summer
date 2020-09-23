@@ -1,6 +1,6 @@
 // Copyright 2020 ALO7 Inc. All rights reserved.
 
-package com.internet.kael.ioc.support;
+package com.internet.kael.ioc.support.destroy;
 
 import com.internet.kael.ioc.exception.IocRuntimeException;
 import com.internet.kael.ioc.model.BeanDefinition;
