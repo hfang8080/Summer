@@ -7,9 +7,10 @@ import com.google.common.collect.Lists;
 import com.internet.kael.ioc.constant.Scope;
 import com.internet.kael.ioc.exception.IocRuntimeException;
 import com.internet.kael.ioc.model.BeanDefinition;
-import com.internet.kael.ioc.support.DefaultDisposableBean;
-import com.internet.kael.ioc.support.DefaultInitialingBean;
-import com.internet.kael.ioc.support.DisposableBean;
+import com.internet.kael.ioc.support.create.DefaultNewInstanceBean;
+import com.internet.kael.ioc.support.destroy.DefaultDisposableBean;
+import com.internet.kael.ioc.support.destroy.DisposableBean;
+import com.internet.kael.ioc.support.init.DefaultInitialingBean;
 import com.internet.kael.ioc.util.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -115,9 +116,9 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
      * @since 1.0
      */
     private Object createBean(final BeanDefinition beanDefinition) {
+        Preconditions.checkNotNull(beanDefinition);
         String className = beanDefinition.getClassName();
-        Class clazz = ClassUtils.getClass(className);
-        Object instance = ClassUtils.newInstance(clazz);
+        Object instance = DefaultNewInstanceBean.getInstance().instance(this, beanDefinition);
 
         // @since 4.0
         DefaultInitialingBean initialingBean = new DefaultInitialingBean(instance, beanDefinition);

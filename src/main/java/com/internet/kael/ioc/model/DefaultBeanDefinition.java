@@ -2,6 +2,8 @@
 
 package com.internet.kael.ioc.model;
 
+import java.util.List;
+
 /**
  * @author Kael He(kael.he@alo7.com)
  * @since 1.0
@@ -14,6 +16,8 @@ public class DefaultBeanDefinition implements BeanDefinition {
     private boolean lazyInit;
     private String initMethodName;
     private String destroyMethodName;
+    private String beanFactoryMethodName;
+    private List<ConstructorArgsDefinition> constructorArgsDefinitions;
 
     @Override
     public String getName() {
@@ -73,5 +77,25 @@ public class DefaultBeanDefinition implements BeanDefinition {
     @Override
     public void setDestroyMethodName(String destroyMethodName) {
         this.destroyMethodName = destroyMethodName;
+    }
+
+    @Override
+    public void setBeanFactoryMethodName(String beanFactoryMethodName) {
+        this.beanFactoryMethodName = beanFactoryMethodName;
+    }
+
+    @Override
+    public String getBeanFactoryMethodName() {
+        return beanFactoryMethodName;
+    }
+
+    @Override
+    public void setConstructorArgsDefinitions(List<ConstructorArgsDefinition> constructorArgsDefinitions) {
+        this.constructorArgsDefinitions = constructorArgsDefinitions;
+    }
+
+    @Override
+    public List<ConstructorArgsDefinition> getConstructorArgsDefinitions() {
+        return constructorArgsDefinitions;
     }
 }

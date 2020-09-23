@@ -2,6 +2,8 @@
 
 package com.internet.kael.ioc.model;
 
+import java.util.List;
+
 /**
  * @author Kael He(kael.he@alo7.com)
  * @since 1.0
@@ -22,6 +24,7 @@ public interface BeanDefinition {
      * @since 1.0
      */
     void setName(final String name);
+
     /**
      * 获取Bean的类名称
      *
@@ -40,6 +43,7 @@ public interface BeanDefinition {
 
     /**
      * 获取作用域
+     *
      * @return 作用域
      * @since 3.0
      */
@@ -47,6 +51,7 @@ public interface BeanDefinition {
 
     /**
      * 设置作用域
+     *
      * @param scope 作用域
      * @since 3.0
      */
@@ -54,6 +59,7 @@ public interface BeanDefinition {
 
     /**
      * 是否是延迟加载
+     *
      * @return 是否
      * @since 3.0
      */
@@ -61,6 +67,7 @@ public interface BeanDefinition {
 
     /**
      * 设置是否是延迟加载
+     *
      * @param lazyInit 是否是延迟加载
      * @since 3.0
      */
@@ -68,6 +75,7 @@ public interface BeanDefinition {
 
     /**
      * 获取初始化的方法名
+     *
      * @return 初始化的方法名
      * @since 4.0
      */
@@ -75,6 +83,7 @@ public interface BeanDefinition {
 
     /**
      * 设置初始化的方法名
+     *
      * @param initMethodName 方法名
      * @since 4.0
      */
@@ -82,6 +91,7 @@ public interface BeanDefinition {
 
     /**
      * 获取销毁的方法名
+     *
      * @return 销毁的方法名
      * @since 4.0
      */
@@ -89,9 +99,39 @@ public interface BeanDefinition {
 
     /**
      * 设置销毁的方法名
+     *
      * @param destroyMethodName 销毁的方法名
      * @since 4.0
      */
     void setDestroyMethodName(String destroyMethodName);
+
+    /**
+     * 设置Bean工厂的方法名
+     *
+     * @param beanFactoryMethodName Bean工厂的方法名
+     * @since 6.0
+     */
+    void setBeanFactoryMethodName(final String beanFactoryMethodName);
+
+    /**
+     * 获取Bean工厂的方法名
+     * @return Bean工厂的方法名
+     * @since 6.0
+     */
+    String getBeanFactoryMethodName();
+
+    /**
+     * 设置构造函数所有参数的定义
+     * @param constructorArgsDefinitions 构造函数的所有参数的定义
+     * @since 6.0
+     */
+    void setConstructorArgsDefinitions(List<ConstructorArgsDefinition> constructorArgsDefinitions);
+
+    /**
+     * 获取函数的所有参数定义
+     * @return 所有构造函数的定义
+     * @since 6.0
+     */
+    List<ConstructorArgsDefinition> getConstructorArgsDefinitions();
 
 }

@@ -1,0 +1,4 @@
+[
+  {"name":"apple","className":"com.internet.kael.ioc.bean.Apple", "lazyInit": false},
+  {"name":"weightedApple","className":"com.internet.kael.ioc.bean.WeightedApple", "constructorArgsDefinitions": [{"ref":"apple"},{"value":"10","type":"java.lang.Integer"}], "lazyInit": false}
+]

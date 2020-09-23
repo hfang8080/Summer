@@ -5,8 +5,10 @@ package com.internet.kael.ioc.util;
 import com.google.common.base.Preconditions;
 import com.internet.kael.ioc.exception.IocRuntimeException;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
@@ -77,11 +79,31 @@ public class ClassUtils {
     }
 
     /**
+     * 获取指定类拥有指定注解的函数
+     * @param clazz 指定类
+     * @param methodName 方法名
+     * @return 函数
+     */
+    public static Optional<Method> getMethod(final Class clazz, String methodName) {
+        Method[] methods = clazz.getMethods();
+        if (ArrayUtils.isEmpty(methods)) {
+            return Optional.empty();
+        }
+        for (Method method: methods) {
+            if (StringUtils.equals(method.getName(), methodName)) {
+                return Optional.of(method);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
      * 反射调用指定实例的无参方法
      * @param method 指定函数
      * @param instance 指定实例
+     * @return 返回值
      */
-    public static void invokeNoArgsMethod(Object instance, Method method) {
+    public static Object invokeNoArgsMethod(Object instance, Method method) {
         Preconditions.checkNotNull(method);
         Preconditions.checkNotNull(instance);
         int count = method.getParameterCount();
@@ -89,9 +111,42 @@ public class ClassUtils {
             throw new IocRuntimeException("Method can not with any parameters.");
         }
         try {
-            method.invoke(instance);
+            return method.invoke(instance);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    /**
+     * 获取构造函数
+     * @param clazz Class对象
+     * @param paramTypes 参数的Class对象
+     * @return 构造函数
+     */
+    public static Constructor getConstructor(Class clazz, Class<?>... paramTypes) {
+        Preconditions.checkNotNull(clazz);
+        try {
+            return clazz.getConstructor(paramTypes);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 通过构造函数实例化
+     * @param constructor 构造函数
+     * @param args 参数
+     * @return 实例
+     */
+    public static Object newInstance(Constructor constructor, Object... args) {
+        Preconditions.checkNotNull(constructor);
+        try {
+            return constructor.newInstance(args);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
