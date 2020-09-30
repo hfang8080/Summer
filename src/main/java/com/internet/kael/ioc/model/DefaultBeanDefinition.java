@@ -18,6 +18,7 @@ public class DefaultBeanDefinition implements BeanDefinition {
     private String destroyMethodName;
     private String beanFactoryMethodName;
     private List<ConstructorArgsDefinition> constructorArgsDefinitions;
+    private List<PropertyArgsDefinition> propertyArgsDefinitions;
 
     @Override
     public String getName() {
@@ -97,5 +98,15 @@ public class DefaultBeanDefinition implements BeanDefinition {
     @Override
     public List<ConstructorArgsDefinition> getConstructorArgsDefinitions() {
         return constructorArgsDefinitions;
+    }
+
+    @Override
+    public void setPropertyArgsDefinitions(List<PropertyArgsDefinition> propertyArgsDefinitions) {
+        this.propertyArgsDefinitions = propertyArgsDefinitions;
+    }
+
+    @Override
+    public List<PropertyArgsDefinition> getPropertyArgsDefinitions() {
+        return propertyArgsDefinitions;
     }
 }

@@ -11,6 +11,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -18,6 +19,8 @@ import java.util.Optional;
  * @since 1.0
  */
 public class ClassUtils {
+
+    private static final String SET = "set";
 
     /**
      * 获取当前的ClassLoader
@@ -148,5 +151,29 @@ public class ClassUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 调用setter函数
+     * @param instance 需要设置属性的实例
+     * @param propertyName 属性名
+     * @param value 值
+     */
+    public static void invokeSetterMethod(final Object instance,
+                                          final String propertyName,
+                                          final Object value) {
+        Preconditions.checkNotNull(instance);
+        Preconditions.checkNotNull(propertyName);
+        if (Objects.isNull(value)) return;
+        Class<?> clazz = instance.getClass();
+        String methodName = SET + StringUtils.capitalize(propertyName);
+        Class<?> paramType = value.getClass();
+        try {
+            Method method = clazz.getMethod(methodName, paramType);
+            method.invoke(instance, value);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
     }
 }
