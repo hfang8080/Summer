@@ -5,6 +5,7 @@ package com.internet.kael.ioc.support.create;
 import com.google.common.base.Preconditions;
 import com.internet.kael.ioc.core.BeanFactory;
 import com.internet.kael.ioc.model.BeanDefinition;
+import com.internet.kael.ioc.support.property.DefaultBeanPropertyProcessor;
 
 import java.util.Objects;
 
@@ -26,10 +27,12 @@ public class DefaultNewInstanceBean implements NewInstanceBean {
         Preconditions.checkNotNull(beanDefinition);
         Object instance = BeanFactoryNewInstanceBean.getInstance()
                 .instance(beanFactory, beanDefinition);
-        if (Objects.nonNull(instance)) {
-            return instance;
+        if (Objects.isNull(instance)) {
+            instance = ConstructorNewInstanceBean.getInstance().instance(beanFactory, beanDefinition);
         }
-        return ConstructorNewInstanceBean.getInstance().instance(beanFactory, beanDefinition);
+        DefaultBeanPropertyProcessor.getInstance()
+                .propertyProcessor(beanFactory, instance, beanDefinition.getPropertyArgsDefinitions());
+        return instance;
     }
 }
 

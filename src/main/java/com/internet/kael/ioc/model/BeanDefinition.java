@@ -134,4 +134,18 @@ public interface BeanDefinition {
      */
     List<ConstructorArgsDefinition> getConstructorArgsDefinitions();
 
+    /**
+     * 设置所有属性的定义
+     * @param propertyArgsDefinitions 所有的属性的定义
+     * @since 7.0
+     */
+    void setPropertyArgsDefinitions(final List<PropertyArgsDefinition> propertyArgsDefinitions);
+
+    /**
+     * 获取所有的属性定义
+     * @return 所有的属性定义
+     * @since 7.0
+     */
+    List<PropertyArgsDefinition> getPropertyArgsDefinitions();
+
 }
