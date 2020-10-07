@@ -5,6 +5,8 @@ package com.internet.kael.ioc.context;
 import com.internet.kael.ioc.constant.Scope;
 import com.internet.kael.ioc.core.DefaultListableBeanFactory;
 import com.internet.kael.ioc.model.BeanDefinition;
+import com.internet.kael.ioc.support.aware.ApplicationContextAware;
+import com.internet.kael.ioc.support.processor.ApplicationContextPostProcessor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,12 +17,6 @@ import java.util.List;
  * @since 4.0
  */
 public abstract class AbstractApplicationContext extends DefaultListableBeanFactory implements ApplicationContext {
-    protected final String fileName;
-
-    public AbstractApplicationContext(String fileName) {
-        this.fileName = fileName;
-        init();
-    }
 
     /**
      * 初始化Bean定义
@@ -29,8 +25,34 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
      */
     protected void init() {
         List<? extends BeanDefinition> beanDefinitions = buildBeanDefinitions();
+        postProcessor(beanDefinitions);
         registerBeanDefinitions(beanDefinitions);
         registerShutdownHook();
+        notifyAllAware();
+    }
+
+    /**
+     * 循环执行Bean信息处理
+     * @param beanDefinitions Bean定义
+     * @return BeanDefinitions
+     * @since 8.0
+     */
+    private List<? extends BeanDefinition> postProcessor(List<? extends BeanDefinition> beanDefinitions) {
+        List<ApplicationContextPostProcessor> processors = getBeans(ApplicationContextPostProcessor.class);
+        for(ApplicationContextPostProcessor processor: processors) {
+            beanDefinitions = processor.beforeRegister(beanDefinitions);
+        }
+        return beanDefinitions;
+    }
+
+    /**
+     * 通知所有application context aware.
+     */
+    private void notifyAllAware() {
+        List<ApplicationContextAware> awareList = getBeans(ApplicationContextAware.class);
+        for (ApplicationContextAware aware : awareList) {
+            aware.setApplicationContext(this);
+        }
     }
 
     /**
