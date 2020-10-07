@@ -4,17 +4,25 @@ package com.internet.kael.ioc.core;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.internet.kael.ioc.constant.Scope;
 import com.internet.kael.ioc.exception.IocRuntimeException;
 import com.internet.kael.ioc.model.BeanDefinition;
+import com.internet.kael.ioc.model.ConstructorArgsDefinition;
+import com.internet.kael.ioc.support.aware.BeanCreateAware;
+import com.internet.kael.ioc.support.aware.BeanNameAware;
 import com.internet.kael.ioc.support.create.DefaultNewInstanceBean;
 import com.internet.kael.ioc.support.destroy.DefaultDisposableBean;
 import com.internet.kael.ioc.support.destroy.DisposableBean;
 import com.internet.kael.ioc.support.init.DefaultInitialingBean;
 import com.internet.kael.ioc.util.ClassUtils;
+import com.internet.kael.ioc.util.CollectionHelper;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +44,7 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
     /**
      * 注册Bean
      *
-     * @param beanName Bean名称
+     * @param beanName       Bean名称
      * @param beanDefinition Bean的配置
      * @since 1.0
      */
@@ -45,9 +53,9 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
         beanDefinitionMap.put(beanName, beanDefinition);
         // 注册Type -> BeanNames 存入Map
         registerTypeBeanNames(beanName, beanDefinition);
-        boolean lazyInit = beanDefinition.isLazyInit();
-        if (!lazyInit) {
-            // 如果不是lazy的，默认创建单例Bean
+        // 通知所有beanName监听器
+        notifyAllBeanNameAware(beanName);
+        if (needEagerCreateSingletonBean(beanDefinition)) {
             registerSingletonBean(beanName, beanDefinition);
         }
     }
@@ -89,6 +97,17 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
         return (T) bean;
     }
 
+    protected <T> List<T> getBeans(Class<T> clazzType) {
+        Preconditions.checkNotNull(clazzType);
+        Set<String> beanNames = getBeanNames(clazzType);
+        if (CollectionUtils.isEmpty(beanNames)) {
+            return Collections.emptyList();
+        }
+
+        return CollectionHelper.transform(Lists.newArrayList(beanNames),
+                beanName -> getBean(beanName, clazzType));
+    }
+
     @Override
     public boolean containsBean(String beanName) {
         Preconditions.checkNotNull(beanName);
@@ -109,6 +128,33 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
     }
 
     /**
+     * 判断是否需要延迟创建Bean
+     * @param beanDefinition Bean定义
+     * @return 是否需要
+     * @since 8.0
+     */
+    private boolean needEagerCreateSingletonBean(final BeanDefinition beanDefinition) {
+        Preconditions.checkNotNull(beanDefinition);
+        if (beanDefinition.isLazyInit()) {
+            return false;
+        }
+        List<ConstructorArgsDefinition> constructorArgsDefinitions = beanDefinition.getConstructorArgsDefinitions();
+        if (CollectionUtils.isNotEmpty(constructorArgsDefinitions)) {
+            for (ConstructorArgsDefinition definition: constructorArgsDefinitions) {
+                String ref = definition.getRef();
+                if (StringUtils.isNoneEmpty(ref)) {
+                    Object instance = beanMap.get(ref);
+                    if (Objects.isNull(instance)) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * 创建Bean实例
      *
      * @param beanDefinition Bean的定义信息
@@ -117,21 +163,26 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
      */
     private Object createBean(final BeanDefinition beanDefinition) {
         Preconditions.checkNotNull(beanDefinition);
-        String className = beanDefinition.getClassName();
+        String beanName = beanDefinition.getName();
+        // 初始化相关处理
         Object instance = DefaultNewInstanceBean.getInstance().instance(this, beanDefinition);
 
-        // @since 4.0
+        // 初始化完成之后的调用
         DefaultInitialingBean initialingBean = new DefaultInitialingBean(instance, beanDefinition);
-        // Do init for beans.
         initialingBean.afterPropertiesSet();
+        // 保存Bean定义信息
         instanceBeanDefinitionPairs.add(Pair.of(instance, beanDefinition));
+
+        // 通知所有监听者
+        notifyAllBeanCreateAware(beanName, instance);
         return instance;
     }
 
     /**
      * 注册单例对象，如果已经存在则直接返回
+     *
      * @param beanName Bean名称
-     * @param bd 对象对应
+     * @param bd       对象对应
      * @return 3.0
      */
     private Object registerSingletonBean(final String beanName, final BeanDefinition bd) {
@@ -145,6 +196,7 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
 
     /**
      * 获取类型信息
+     *
      * @param beanDefinition Bean的定义
      * @return Bean的类型
      * @since 3.0
@@ -156,29 +208,79 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
 
     /**
      * 注册类型及其对应的名称
+     *
      * @param beanName Bean名称
-     * @param bd Bean定义
+     * @param bd       Bean定义
      * @since 3.0
      */
     private void registerTypeBeanNames(final String beanName, final BeanDefinition bd) {
-        Class type = getType(bd);
+        Set<Class> typeSet = getTypeSet(bd);
 
-        // @since 2.0 类型信息
-        if (!typeBeanNamesMap.containsKey(type)) {
-            typeBeanNamesMap.put(type, new HashSet<>());
+        for (Class type: typeSet) {
+            if (!typeBeanNamesMap.containsKey(type)) {
+                typeBeanNamesMap.put(type, new HashSet<>());
+            }
+            Set<String> beanNames = typeBeanNamesMap.get(type);
+            beanNames.add(beanName);
+            typeBeanNamesMap.put(type, beanNames);
         }
-        Set<String> beanNames = typeBeanNamesMap.get(type);
-        beanNames.add(beanName);
-        typeBeanNamesMap.put(type, beanNames);
+    }
+
+    /**
+     * 通知所有BeanCreateAware.
+     *
+     * @param beanName Bean名称
+     * @param instance 实例
+     * @since 8.0
+     */
+    private void notifyAllBeanCreateAware(final String beanName, final Object instance) {
+        List<BeanCreateAware> awareList = getBeans(BeanCreateAware.class);
+        for (BeanCreateAware aware : awareList) {
+            aware.setBeanCreate(beanName, instance);
+        }
+    }
+
+    /**
+     * 通知所有BeanNameAware.
+     * @param beanName Bean名称
+     * @since 8.0
+     */
+    private void notifyAllBeanNameAware(final String beanName) {
+        List<BeanNameAware> awareList = getBeans(BeanNameAware.class);
+        for (BeanNameAware aware: awareList) {
+            aware.setBeanName(beanName);
+        }
+    }
+
+    /**
+     * 获取类型信息列表。
+     *  1）当前类信息
+     *  2) 所有的接口信息
+     * @param beanDefinition 对象定义
+     * @return 类型集合
+     */
+    private Set<Class> getTypeSet(final BeanDefinition beanDefinition) {
+        HashSet<Class> classSet = Sets.newHashSet();
+        Class clazz = getType(beanDefinition);
+        Class[] interfaces = clazz.getInterfaces();
+        List<Class> classes = Arrays.asList(interfaces);
+        classSet.add(clazz);
+        if (CollectionUtils.isNotEmpty(classes)) {
+            classSet.addAll(classes);
+        }
+        return classSet;
     }
 
     /**
      * 销毁所有属性
+     *
      * @since 4.0
      */
     @Override
     public void destroy() {
         // 销毁所有的属性信息
+        // 这里的销毁严格来说，还有很多事情要做。
+        // 比如销毁的顺序：最外层没有依赖的开始销毁，依次往里，直到销毁全部。可能会出现循环依赖，类似于 GC。
         System.out.println("Destroy all beans start.");
         for (Pair<Object, BeanDefinition> pair : instanceBeanDefinitionPairs) {
             DefaultDisposableBean disposableBean = new DefaultDisposableBean(pair.getLeft(), pair.getRight());

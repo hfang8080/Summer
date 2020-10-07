@@ -20,9 +20,12 @@ import java.util.Objects;
  * @since 1.0
  */
 public class JsonApplicationContext extends AbstractApplicationContext {
+    private final String fileName;
 
     public JsonApplicationContext(String fileName) {
-        super(fileName);
+        this.fileName = fileName;
+        super.init();
+
     }
 
     @Override
