@@ -7,6 +7,7 @@ import com.internet.kael.ioc.core.BeanFactory;
 import com.internet.kael.ioc.model.BeanDefinition;
 import com.internet.kael.ioc.model.DefaultBeanDefinition;
 import com.internet.kael.ioc.util.ClassUtils;
+import com.internet.kael.ioc.util.CollectionHelper;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -29,14 +30,15 @@ public class JsonApplicationContext extends AbstractApplicationContext {
     }
 
     @Override
-    protected List<? extends BeanDefinition> buildBeanDefinitions() {
+    protected List<BeanDefinition> buildBeanDefinitions() {
         InputStream in = ClassUtils.currentClassLoader().getResourceAsStream(fileName);
         if (Objects.isNull(in)) return Collections.emptyList();
         try {
             // 读取配置文件文件，并转化成BeanDefinition对象
             String jsonConfig = IOUtils.toString(in);
 
-            return JSON.parseArray(jsonConfig, DefaultBeanDefinition.class);
+            List<DefaultBeanDefinition> beanDefinitions = JSON.parseArray(jsonConfig, DefaultBeanDefinition.class);
+            return CollectionHelper.transform(beanDefinitions, bd -> bd);
         } catch (IOException e) {
             e.printStackTrace();
         }
