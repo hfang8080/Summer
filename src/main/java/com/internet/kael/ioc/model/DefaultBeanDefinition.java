@@ -2,6 +2,9 @@
 
 package com.internet.kael.ioc.model;
 
+import org.apache.commons.beanutils.BeanUtils;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -19,6 +22,8 @@ public class DefaultBeanDefinition implements BeanDefinition {
     private String beanFactoryMethodName;
     private List<ConstructorArgsDefinition> constructorArgsDefinitions;
     private List<PropertyArgsDefinition> propertyArgsDefinitions;
+    private boolean abstractClass;
+    private String parentName;
 
     @Override
     public String getName() {
@@ -108,5 +113,38 @@ public class DefaultBeanDefinition implements BeanDefinition {
     @Override
     public List<PropertyArgsDefinition> getPropertyArgsDefinitions() {
         return propertyArgsDefinitions;
+    }
+
+    @Override
+    public boolean isAbstractClass() {
+        return abstractClass;
+    }
+
+    @Override
+    public void setAbstractClass(boolean abstractClass) {
+        this.abstractClass = abstractClass;
+    }
+
+    @Override
+    public String getParentName() {
+        return parentName;
+    }
+
+    @Override
+    public void setParentName(String parentName) {
+        this.parentName = parentName;
+    }
+
+    @Override
+    public BeanDefinition clone() {
+        DefaultBeanDefinition definition = new DefaultBeanDefinition();
+        try {
+            BeanUtils.copyProperties(this, definition);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return definition;
     }
 }

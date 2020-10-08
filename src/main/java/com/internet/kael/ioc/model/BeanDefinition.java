@@ -148,4 +148,39 @@ public interface BeanDefinition {
      */
     List<PropertyArgsDefinition> getPropertyArgsDefinitions();
 
+    /**
+     * 是否是抽象类
+     * @return 是否
+     * @since 8.0
+     */
+    boolean isAbstractClass();
+
+    /**
+     * 设置是否是抽象类
+     * @param abstractClass 抽象类
+     * @since 8.0
+     */
+    void setAbstractClass(boolean abstractClass);
+
+    /**
+     * 获取父类名称
+     * @return 父类名称
+     * @since 8.0
+     */
+    String getParentName();
+
+    /**
+     * 设置父类名
+     * @param parentName 父类名称
+     * @since 8.0
+     */
+    void setParentName(String parentName);
+
+    /**
+     * 复制一份Bean定义
+     * @return Bean定义
+     * @since 8.0
+     */
+    BeanDefinition clone();
+
 }

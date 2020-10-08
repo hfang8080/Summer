@@ -1,0 +1,3 @@
+[{"name":"copyUser","className":"com.internet.kael.ioc.model.User","parentName":"user"},
+  {"name":"user","className":"com.internet.kael.ioc.model.User","lazyInit":false,
+    "propertyArgsDefinitions":[{"name":"name","type":"java.lang.String","value":"helen"}]}]

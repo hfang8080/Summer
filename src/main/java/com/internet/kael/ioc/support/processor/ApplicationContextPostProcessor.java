@@ -17,5 +17,5 @@ public interface ApplicationContextPostProcessor extends PostProcessor {
      * @return 结果
      * @since 8.0
      */
-    List<? extends BeanDefinition> beforeRegister(List<? extends BeanDefinition> definitions);
+    List<BeanDefinition> beforeRegister(List<BeanDefinition> definitions);
 }
