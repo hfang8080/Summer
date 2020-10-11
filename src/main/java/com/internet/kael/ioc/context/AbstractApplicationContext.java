@@ -10,6 +10,8 @@ import com.internet.kael.ioc.exception.IocRuntimeException;
 import com.internet.kael.ioc.model.BeanDefinition;
 import com.internet.kael.ioc.model.PropertyArgsDefinition;
 import com.internet.kael.ioc.support.aware.ApplicationContextAware;
+import com.internet.kael.ioc.support.circle.BeanDependenceChecker;
+import com.internet.kael.ioc.support.circle.DefaultBeanDependenceChecker;
 import com.internet.kael.ioc.support.processor.ApplicationContextPostProcessor;
 import com.internet.kael.ioc.util.CollectionHelper;
 import org.apache.commons.collections4.CollectionUtils;
@@ -48,6 +50,12 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
      * @since 9.0
      */
     private List<BeanDefinition> creatableBeanDefinitions = Lists.newArrayList();
+
+    /**
+     * Bean依赖的检查器
+     * @since 10.0
+     */
+    private BeanDependenceChecker beanDependenceChecker = new DefaultBeanDependenceChecker();
     /**
      * 初始化Bean定义
      *
@@ -57,6 +65,7 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
         List<BeanDefinition> beanDefinitions = buildBeanDefinitions();
         buildCreatableBeanDefinitions(beanDefinitions);
         creatableBeanDefinitions = postProcessor(creatableBeanDefinitions);
+        beanDependenceChecker.registerBeanDefinition(creatableBeanDefinitions);
         registerBeanDefinitions(creatableBeanDefinitions);
         registerShutdownHook();
         notifyAllAware();

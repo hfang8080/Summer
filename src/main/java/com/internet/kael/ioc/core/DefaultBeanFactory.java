@@ -11,6 +11,8 @@ import com.internet.kael.ioc.model.BeanDefinition;
 import com.internet.kael.ioc.model.ConstructorArgsDefinition;
 import com.internet.kael.ioc.support.aware.BeanCreateAware;
 import com.internet.kael.ioc.support.aware.BeanNameAware;
+import com.internet.kael.ioc.support.circle.BeanDependenceChecker;
+import com.internet.kael.ioc.support.circle.DefaultBeanDependenceChecker;
 import com.internet.kael.ioc.support.create.DefaultNewInstanceBean;
 import com.internet.kael.ioc.support.destroy.DefaultDisposableBean;
 import com.internet.kael.ioc.support.destroy.DisposableBean;
@@ -40,6 +42,7 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
     private Map<String, Object> beanMap = new ConcurrentHashMap<>();
     private Map<Class, Set<String>> typeBeanNamesMap = new ConcurrentHashMap<>();
     private List<Pair<Object, BeanDefinition>> instanceBeanDefinitionPairs = Lists.newArrayList();
+    private BeanDependenceChecker dependenceChecker = new DefaultBeanDependenceChecker();
 
     /**
      * 注册Bean
@@ -164,6 +167,10 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
     private Object createBean(final BeanDefinition beanDefinition) {
         Preconditions.checkNotNull(beanDefinition);
         String beanName = beanDefinition.getName();
+
+        if (dependenceChecker.isCyclicDependence(beanName)) {
+            throw new IocRuntimeException(beanName + "has circle reference.");
+        }
         // 初始化相关处理
         Object instance = DefaultNewInstanceBean.getInstance().instance(this, beanDefinition);
 
