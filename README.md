@@ -1,7 +1,6 @@
 ## 思路
-增加抽象`Bean`和`Bean`的继承关系
+增加`Bean循环依赖的检测
 
 ## 实现
-1. `BeanDefinition` 增加`abstractClass`和`parentName`支持.
-2. 注册`BeanDefinition`的时候区分`AbstractBean`、`ChildBean`和正常的`Bean`
-
+增加`BeanDependenceChecker`类进行`Bean`循环检测
+``

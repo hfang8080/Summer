@@ -1,0 +1,5 @@
+[
+{"name":"namedApple","className":"com.internet.kael.ioc.bean.NamedApple","lazyInit":false,"constructorArgsDefinitions":[{"ref":"namedApple2"},{"type":"java.lang.String","value":"nameeee"}]},
+{"name":"namedApple2","className":"com.internet.kael.ioc.bean.NamedApple","lazyInit":false,"constructorArgsDefinitions":[{"ref":"namedApple3"}]},
+{"name":"namedApple3","className":"com.internet.kael.ioc.bean.NamedApple","lazyInit":false,"constructorArgsDefinitions":[{"ref":"namedApple"}]}
+]
