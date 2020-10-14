@@ -25,6 +25,10 @@ public class DefaultBeanDefinition implements BeanDefinition {
     private boolean abstractClass;
     private String parentName;
 
+    public static DefaultBeanDefinition newInstance() {
+        return new DefaultBeanDefinition();
+    }
+
     @Override
     public String getName() {
         return name;
