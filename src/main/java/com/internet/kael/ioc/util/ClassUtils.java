@@ -11,6 +11,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -176,4 +178,15 @@ public class ClassUtils {
         }
 
     }
+
+    /**
+     * 获取class下面的所有的方法名
+     * @param clazz Class对象
+     * @return 所有方法名
+     */
+    public static List<Method> getMethods(Class clazz) {
+        Method[] methods = clazz.getMethods();
+        return Arrays.asList(methods);
+    }
+
 }

@@ -2,6 +2,7 @@
 
 package com.internet.kael.ioc.model;
 
+import com.internet.kael.ioc.constant.BeanSourceType;
 import org.apache.commons.beanutils.BeanUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,6 +25,7 @@ public class DefaultBeanDefinition implements BeanDefinition {
     private List<PropertyArgsDefinition> propertyArgsDefinitions;
     private boolean abstractClass;
     private String parentName;
+    private BeanSourceType beanSourceType;
 
     public static DefaultBeanDefinition newInstance() {
         return new DefaultBeanDefinition();
@@ -150,5 +152,15 @@ public class DefaultBeanDefinition implements BeanDefinition {
             e.printStackTrace();
         }
         return definition;
+    }
+
+    @Override
+    public BeanSourceType getBeanSourceType() {
+        return beanSourceType;
+    }
+
+    @Override
+    public void setBeanSourceType(BeanSourceType beanSourceType) {
+        this.beanSourceType = beanSourceType;
     }
 }

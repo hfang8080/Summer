@@ -2,6 +2,8 @@
 
 package com.internet.kael.ioc.model;
 
+import com.internet.kael.ioc.constant.BeanSourceType;
+
 import java.util.List;
 
 /**
@@ -182,5 +184,19 @@ public interface BeanDefinition {
      * @since 8.0
      */
     BeanDefinition clone();
+
+    /**
+     * 获取Bean的来源
+     * @return Bean的来源
+     * @since 12.0
+     */
+    BeanSourceType getBeanSourceType();
+
+    /**
+     * 设置Bean的来源
+     * @param beanSourceType Bean的来源
+     * @since 12.0
+     */
+    void setBeanSourceType(final BeanSourceType beanSourceType);
 
 }
