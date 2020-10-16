@@ -3,6 +3,7 @@
 package com.internet.kael.ioc.support.create;
 
 import com.google.common.base.Preconditions;
+import com.internet.kael.ioc.constant.BeanSourceType;
 import com.internet.kael.ioc.core.BeanFactory;
 import com.internet.kael.ioc.core.ListableBeanFactory;
 import com.internet.kael.ioc.model.BeanDefinition;
@@ -29,13 +30,19 @@ public class DefaultNewInstanceBean implements NewInstanceBean {
         Preconditions.checkNotNull(beanFactory);
         Preconditions.checkNotNull(beanDefinition);
         // Bean 工厂创建Bean
-        Object instance = BeanFactoryNewInstanceBean.getInstance()
+        Object instance;
+        instance = BeanFactoryNewInstanceBean.getInstance()
                 .instance(beanFactory, beanDefinition);
-
-        // 构造函数构造Bean
         if (Objects.isNull(instance)) {
-            instance = ConstructorNewInstanceBean.getInstance().instance(beanFactory, beanDefinition);
+            if (BeanSourceType.CONFIGURATION_BEAN.equals(beanDefinition.getBeanSourceType())) {
+                // 通过构造器的方法
+                instance = ConfigurationMethodInstanceBean.getInstance().instance(beanFactory, beanDefinition);
+            } else {
+                // 构造函数构造Bean
+                instance = ConstructorNewInstanceBean.getInstance().instance(beanFactory, beanDefinition);
+            }
         }
+
         String beanName = beanDefinition.getName();
         ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;
         List<BeanPostProcessor> processors = listableBeanFactory.getBeans(BeanPostProcessor.class);
