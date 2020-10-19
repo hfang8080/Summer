@@ -8,9 +8,9 @@ package com.internet.kael.ioc.constant;
  */
 public enum Scope {
     // 单例
-    SINGLETON("singleton"),
+    SINGLETON(SummerConstant.SINGLETON),
     // 多例
-    PROTOTYPE("prototype");
+    PROTOTYPE(SummerConstant.PROTOTYPE);
 
     private String code;
 
