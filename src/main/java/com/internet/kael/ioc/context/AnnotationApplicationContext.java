@@ -4,8 +4,10 @@ package com.internet.kael.ioc.context;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.internet.kael.ioc.annotation.Bean;
 import com.internet.kael.ioc.annotation.Configuration;
+import com.internet.kael.ioc.annotation.Import;
 import com.internet.kael.ioc.constant.BeanSourceType;
 import com.internet.kael.ioc.constant.Scope;
 import com.internet.kael.ioc.model.AnnotationBeanDefinition;
@@ -22,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * 注解类型的应用上下文
@@ -52,7 +55,8 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     @Override
     protected List<BeanDefinition> buildBeanDefinitions() {
         List<BeanDefinition> beanDefinitions = Lists.newArrayList();
-        for (Class clazz : configClasses) {
+        List<Class> configurations = getConfigurations();
+        for (Class clazz : configurations) {
             if (clazz.isAnnotationPresent(Configuration.class)) {
                 Optional<AnnotationBeanDefinition> optionalBeanDefinition = buildConfigurationBeanDefinition(clazz);
                 if (optionalBeanDefinition.isPresent()) {
@@ -64,6 +68,37 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             }
         }
         return beanDefinitions;
+    }
+
+    /**
+     * 获取所有的配置
+     * @return 所有的配置类
+     * @since 14.0
+     */
+    private List<Class> getConfigurations() {
+        Set<Class> configurations = Sets.newHashSet();
+        for (Class clazz : configClasses) {
+            addAllImportClass(configurations, clazz);
+        }
+        return Lists.newArrayList(configurations);
+    }
+
+    /**
+     * 增加所有的配置类
+     * @param configurations 所有的配置信息
+     * @param configClass 配置类
+     * @since 14.0
+     */
+    private void addAllImportClass(final Set<Class> configurations, final Class configClass) {
+        configurations.add(configClass);
+        if (configClass.isAnnotationPresent(Import.class)) {
+            Import annotation = (Import) configClass.getAnnotation(Import.class);
+            Class[] configClasses = annotation.value();
+            for (Class clazz : configClasses) {
+                configurations.add(clazz);
+                addAllImportClass(configurations, clazz);
+            }
+        }
     }
 
     /**

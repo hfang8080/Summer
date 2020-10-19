@@ -4,6 +4,8 @@ package com.internet.kael.ioc.support.circle;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.internet.kael.ioc.constant.BeanSourceType;
+import com.internet.kael.ioc.model.AnnotationBeanDefinition;
 import com.internet.kael.ioc.model.BeanDefinition;
 import com.internet.kael.ioc.model.ConstructorArgsDefinition;
 import com.internet.kael.ioc.model.PropertyArgsDefinition;
@@ -72,11 +74,21 @@ public class DefaultBeanDependenceChecker implements BeanDependenceChecker {
 
     /**
      * 构建Bean定义的映射关系
+     * 获取对象的所有依赖信息
+     * （1）构造器依赖 {@link ConstructorArgsDefinition#getRef()}
+     * （2）属性值依赖 {@link PropertyArgsDefinition#getRef()}
+     * （3）如果是 config-bean，则 config 首先就是 bean 对应的依赖。 @since 14.0
      * @param bd Bean定义
      * @since 10.0
      */
     private void buildDependenceMapping(BeanDefinition bd) {
         Set<String> dependencies = Sets.newHashSet();
+        BeanSourceType beanSourceType = bd.getBeanSourceType();
+        if (beanSourceType == BeanSourceType.CONFIGURATION_BEAN) {
+            AnnotationBeanDefinition annotationBeanDefinition = (AnnotationBeanDefinition) bd;
+            dependencies.add(annotationBeanDefinition.getConfigurationName());
+        }
+
         List<ConstructorArgsDefinition> constructorArgsDefinitions = bd.getConstructorArgsDefinitions();
         if (CollectionUtils.isNotEmpty(constructorArgsDefinitions)) {
             for (ConstructorArgsDefinition cad : constructorArgsDefinitions) {
