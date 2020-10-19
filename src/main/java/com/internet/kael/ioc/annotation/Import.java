@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 /**
  * 引入配置信息
  * @author Kael He (kael.he@alo7.com)
- * @since 13.0
+ * @since 14.0
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

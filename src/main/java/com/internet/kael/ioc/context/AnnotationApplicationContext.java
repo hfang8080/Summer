@@ -73,6 +73,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     /**
      * 获取所有的配置
      * @return 所有的配置类
+     * @since 14.0
      */
     private List<Class> getConfigurations() {
         Set<Class> configurations = Sets.newHashSet();
@@ -86,6 +87,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
      * 增加所有的配置类
      * @param configurations 所有的配置信息
      * @param configClass 配置类
+     * @since 14.0
      */
     private void addAllImportClass(final Set<Class> configurations, final Class configClass) {
         configurations.add(configClass);
