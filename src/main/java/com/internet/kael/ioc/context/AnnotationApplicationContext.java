@@ -11,10 +11,11 @@ import com.internet.kael.ioc.constant.Scope;
 import com.internet.kael.ioc.model.AnnotationBeanDefinition;
 import com.internet.kael.ioc.model.BeanDefinition;
 import com.internet.kael.ioc.model.DefaultAnnotationBeanDefinition;
-import com.internet.kael.ioc.model.DefaultBeanDefinition;
 import com.internet.kael.ioc.support.name.BeanNameStrategy;
 import com.internet.kael.ioc.support.name.DefaultBeanNameStrategy;
 import com.internet.kael.ioc.util.ClassUtils;
+import com.internet.kael.ioc.util.Lazies;
+import com.internet.kael.ioc.util.Scopes;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Method;
@@ -77,8 +78,8 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         Configuration configuration = (Configuration) clazz.getAnnotation(Configuration.class);
         AnnotationBeanDefinition beanDefinition = new DefaultAnnotationBeanDefinition();
         beanDefinition.setClassName(clazz.getName());
-        beanDefinition.setLazyInit(false);
-        beanDefinition.setScope(Scope.SINGLETON.getCode());
+        beanDefinition.setLazyInit(Lazies.isLazy(clazz));
+        beanDefinition.setScope(Scopes.getScope(clazz));
         beanDefinition.setBeanSourceType(BeanSourceType.CONFIGURATION);
         String beanName = configuration.value();
         if (StringUtils.isEmpty(beanName)) {
@@ -114,8 +115,8 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
                 bd.setConfigurationName(configBeanDefinition.getName());
                 bd.setConfigurationBeanMethod(methodName);
                 // 这里需要添加property/constructor对应的实现
-                bd.setLazyInit(false);
-                bd.setScope(Scope.SINGLETON.getCode());
+                bd.setLazyInit(Lazies.isLazy(method));
+                bd.setScope(Scopes.getScope(method));
                 beanDefinitions.add(bd);
             }
         }
