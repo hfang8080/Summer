@@ -3,6 +3,8 @@
 package com.internet.kael.ioc.context;
 
 import com.internet.kael.ioc.bean.Apple;
+import com.internet.kael.ioc.config.AppAutoWiredListConfig;
+import com.internet.kael.ioc.config.AppAutowiredConfig;
 import com.internet.kael.ioc.config.AppConfig;
 import com.internet.kael.ioc.config.AppleBeanConfig;
 import com.internet.kael.ioc.config.AppleMethodBeanRefConfig;
@@ -58,5 +60,19 @@ public class AnnotationApplicationContextTest {
         AnnotationApplicationContext ac = new AnnotationApplicationContext(AppleMethodBeanRefConfig.class);
         Object bean = ac.getBean("weightedApple");
         assertNotNull(bean);
+    }
+
+    @Test
+    public void autowired() {
+        AnnotationApplicationContext ac = new AnnotationApplicationContext(AppAutowiredConfig.class);
+        AppAutowiredConfig config = ac.getBean("appAutowiredConfig", AppAutowiredConfig.class);
+        assertEquals("Black", config.introduce());
+    }
+
+    @Test
+    public void autowiredList() {
+        AnnotationApplicationContext ac = new AnnotationApplicationContext(AppAutoWiredListConfig.class);
+        AppAutoWiredListConfig config = ac.getBean("appAutoWiredListConfig", AppAutoWiredListConfig.class);
+        assertEquals(2, config.getApples().size());
     }
 }
