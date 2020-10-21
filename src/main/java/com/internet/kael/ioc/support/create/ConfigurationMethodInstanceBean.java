@@ -2,14 +2,19 @@
 
 package com.internet.kael.ioc.support.create;
 
+import com.internet.kael.ioc.constant.BeanSourceType;
 import com.internet.kael.ioc.core.BeanFactory;
 import com.internet.kael.ioc.exception.IocRuntimeException;
 import com.internet.kael.ioc.model.AnnotationBeanDefinition;
 import com.internet.kael.ioc.model.BeanDefinition;
 import com.internet.kael.ioc.util.ClassUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Kael He (kael.he@alo7.com)
@@ -32,9 +37,48 @@ public class ConfigurationMethodInstanceBean extends AbstractNewInstanceBean {
         Object configBean = beanFactory.getBean(bd.getConfigurationName());
         Optional<Method> optionalMethod = ClassUtils.getMethod(configBean.getClass(), bd.getConfigurationBeanMethod());
         if (optionalMethod.isPresent()) {
-            Object bean = ClassUtils.invokeNoArgsMethod(configBean, optionalMethod.get());
-            return Optional.of(bean);
+            Object[] paramsObjects = getParams(beanFactory, bd);
+            Object bean = ClassUtils.invokeMethod(configBean, optionalMethod.get(), paramsObjects);
+            return Optional.ofNullable(bean);
         }
         return Optional.empty();
+    }
+
+    private Object[] getParams(final BeanFactory beanFactory, final AnnotationBeanDefinition annotationBeanDefinition) {
+        List<String> refNames = annotationBeanDefinition.getConfigBeanMethodParamRefs();
+        if (CollectionUtils.isEmpty(refNames)) {
+            return null;
+        }
+        fillRefName(beanFactory, annotationBeanDefinition);
+        Object[] objects = new Object[refNames.size()];
+        for (int i = 0; i < refNames.size(); i++) {
+            String refName = refNames.get(i);
+            objects[i] = beanFactory.getBean(refName);
+        }
+        return objects;
+    }
+
+    private void fillRefName(final BeanFactory beanFactory, final AnnotationBeanDefinition annotationBeanDefinition) {
+        if (annotationBeanDefinition.getBeanSourceType() == BeanSourceType.CONFIGURATION_BEAN) {
+            String beanName = annotationBeanDefinition.getName();
+            Class[] paramTypes = annotationBeanDefinition.getConfigBeanMethodParamTypes();
+            if (ArrayUtils.isNotEmpty(paramTypes)) {
+                List<String> paramRefs = annotationBeanDefinition.getConfigBeanMethodParamRefs();
+                for (int i = 0; i < paramTypes.length; i++) {
+                    Set<String> paramBeanNames = beanFactory.getBeanNames(paramTypes[i]);
+                    if (CollectionUtils.isEmpty(paramBeanNames)) {
+                        throw new IocRuntimeException(
+                                beanName + " configuration method param of [" + i + "] not found!");
+                    }
+
+                    if (paramBeanNames.size() == 1) {
+                        paramRefs.set(i, paramBeanNames.iterator().next());
+                    } else {
+                        throw new IocRuntimeException(beanName +
+                                " configuration method param of [" + i + "] must be unique!");
+                    }
+                }
+            }
+        }
     }
 }

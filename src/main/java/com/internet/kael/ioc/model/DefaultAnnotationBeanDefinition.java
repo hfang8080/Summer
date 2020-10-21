@@ -2,6 +2,8 @@
 
 package com.internet.kael.ioc.model;
 
+import java.util.List;
+
 /**
  * @author Kael He (kael.he@alo7.com)
  * @since 12.0
@@ -9,7 +11,9 @@ package com.internet.kael.ioc.model;
 public class DefaultAnnotationBeanDefinition extends DefaultBeanDefinition implements AnnotationBeanDefinition {
 
     private String configurationName;
-    private String configurationBeanMethod;;
+    private String configurationBeanMethod;
+    private Class[] classes;
+    private List<String> refs;
 
     @Override
     public void setConfigurationName(String configurationName) {
@@ -30,4 +34,25 @@ public class DefaultAnnotationBeanDefinition extends DefaultBeanDefinition imple
     public String getConfigurationBeanMethod() {
         return configurationBeanMethod;
     }
+
+    @Override
+    public void setConfigBeanMethodParamTypes(Class[] classes) {
+        this.classes = classes;
+    }
+
+    @Override
+    public Class[] getConfigBeanMethodParamTypes() {
+        return classes;
+    }
+
+    @Override
+    public void setConfigBeanMethodParamRefs(List<String> refs) {
+        this.refs = refs;
+    }
+
+    @Override
+    public List<String> getConfigBeanMethodParamRefs() {
+        return refs;
+    }
+
 }

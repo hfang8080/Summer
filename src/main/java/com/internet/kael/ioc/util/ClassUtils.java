@@ -11,10 +11,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Kael He(kael.he@alo7.com)
@@ -124,6 +127,25 @@ public class ClassUtils {
     }
 
     /**
+     * 反射调用指定方法。
+     * @param instance 实例对象
+     * @param method 方法
+     * @param params 参数
+     * @return 调用的返回结果
+     */
+    public static Object invokeMethod(Object instance, Method method, Object... params) {
+        Preconditions.checkNotNull(method);
+        Preconditions.checkNotNull(instance);
+        try {
+            return method.invoke(instance, params);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+    /**
      * 获取构造函数
      * @param clazz Class对象
      * @param paramTypes 参数的Class对象
@@ -187,6 +209,17 @@ public class ClassUtils {
     public static List<Method> getMethods(Class clazz) {
         Method[] methods = clazz.getMethods();
         return Arrays.asList(methods);
+    }
+
+    /**
+     * 获取方法的所有参数的名称。
+     * @param method 方法
+     * @return 方法所有的参数的名称
+     */
+    public static List<String> getMethodParamNames(Method method) {
+        return Stream.of(method.getParameters())
+                .map(Parameter::getName)
+                .collect(Collectors.toList());
     }
 
 }

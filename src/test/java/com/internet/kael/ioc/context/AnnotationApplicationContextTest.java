@@ -5,6 +5,7 @@ package com.internet.kael.ioc.context;
 import com.internet.kael.ioc.bean.Apple;
 import com.internet.kael.ioc.config.AppConfig;
 import com.internet.kael.ioc.config.AppleBeanConfig;
+import com.internet.kael.ioc.config.AppleMethodBeanRefConfig;
 import com.internet.kael.ioc.config.ImportAppConfig;
 import com.internet.kael.ioc.config.LazyScopeConfig;
 import junit.framework.TestCase;
@@ -50,5 +51,12 @@ public class AnnotationApplicationContextTest {
         Object apple1 = ac.getBean("apple");
         Object apple2 = ac.getBean("apple");
         assertNotEquals(apple1, apple2);
+    }
+
+    @Test
+    public void configBeanMethodArgs() {
+        AnnotationApplicationContext ac = new AnnotationApplicationContext(AppleMethodBeanRefConfig.class);
+        Object bean = ac.getBean("weightedApple");
+        assertNotNull(bean);
     }
 }

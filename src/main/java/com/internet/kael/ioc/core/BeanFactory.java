@@ -4,6 +4,8 @@ package com.internet.kael.ioc.core;
 
 import com.internet.kael.ioc.model.BeanDefinition;
 
+import java.util.Set;
+
 /**
  * Bean 工厂
  *
@@ -58,4 +60,11 @@ public interface BeanFactory {
      * @since 2.0
      */
     Class<?> getType(final String beanName);
+
+    /**
+     * 获取Bean名称列表
+     * @param clazzType Class类型
+     * @return Bean名称列表
+     */
+    Set<String> getBeanNames(final Class clazzType);
 }
