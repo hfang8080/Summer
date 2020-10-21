@@ -4,6 +4,7 @@ package com.internet.kael.ioc.support.create;
 
 import com.internet.kael.ioc.constant.BeanSourceType;
 import com.internet.kael.ioc.core.BeanFactory;
+import com.internet.kael.ioc.core.ListableBeanFactory;
 import com.internet.kael.ioc.exception.IocRuntimeException;
 import com.internet.kael.ioc.model.AnnotationBeanDefinition;
 import com.internet.kael.ioc.model.BeanDefinition;
@@ -65,7 +66,8 @@ public class ConfigurationMethodInstanceBean extends AbstractNewInstanceBean {
             if (ArrayUtils.isNotEmpty(paramTypes)) {
                 List<String> paramRefs = annotationBeanDefinition.getConfigBeanMethodParamRefs();
                 for (int i = 0; i < paramTypes.length; i++) {
-                    Set<String> paramBeanNames = beanFactory.getBeanNames(paramTypes[i]);
+                    ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;
+                    Set<String> paramBeanNames = listableBeanFactory.getBeanNames(paramTypes[i]);
                     if (CollectionUtils.isEmpty(paramBeanNames)) {
                         throw new IocRuntimeException(
                                 beanName + " configuration method param of [" + i + "] not found!");

@@ -3,10 +3,12 @@
 package com.internet.kael.ioc.support.create;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.internet.kael.ioc.constant.BeanSourceType;
 import com.internet.kael.ioc.core.BeanFactory;
 import com.internet.kael.ioc.core.ListableBeanFactory;
 import com.internet.kael.ioc.model.BeanDefinition;
+import com.internet.kael.ioc.support.processor.AutowiredBeanPostProcessor;
 import com.internet.kael.ioc.support.processor.BeanPostProcessor;
 import com.internet.kael.ioc.support.property.DefaultBeanPropertyProcessor;
 
@@ -44,8 +46,7 @@ public class DefaultNewInstanceBean implements NewInstanceBean {
         }
 
         String beanName = beanDefinition.getName();
-        ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;
-        List<BeanPostProcessor> processors = listableBeanFactory.getBeans(BeanPostProcessor.class);
+        List<BeanPostProcessor> processors = getBeanPostProcessors(beanFactory);
         for (BeanPostProcessor processor: processors) {
             processor.beforePropertySet(beanName, instance);
         }
@@ -58,6 +59,15 @@ public class DefaultNewInstanceBean implements NewInstanceBean {
             processor.afterPropertySet(beanName, instance);
         }
         return instance;
+    }
+
+    private List<BeanPostProcessor> getBeanPostProcessors(final BeanFactory beanFactory) {
+        ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;
+        List<BeanPostProcessor> processors = Lists.newArrayList(listableBeanFactory.getBeans(BeanPostProcessor.class));
+        AutowiredBeanPostProcessor autowiredBeanPostProcessor = new AutowiredBeanPostProcessor();
+        autowiredBeanPostProcessor.setBeanFactory(beanFactory);
+        processors.add(autowiredBeanPostProcessor);
+        return processors;
     }
 }
 

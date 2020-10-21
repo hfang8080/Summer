@@ -9,7 +9,6 @@ import com.internet.kael.ioc.annotation.Bean;
 import com.internet.kael.ioc.annotation.Configuration;
 import com.internet.kael.ioc.annotation.Import;
 import com.internet.kael.ioc.constant.BeanSourceType;
-import com.internet.kael.ioc.constant.Scope;
 import com.internet.kael.ioc.model.AnnotationBeanDefinition;
 import com.internet.kael.ioc.model.BeanDefinition;
 import com.internet.kael.ioc.model.DefaultAnnotationBeanDefinition;

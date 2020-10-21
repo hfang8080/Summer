@@ -3,6 +3,7 @@
 package com.internet.kael.ioc.core;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Kael He(kael.he@alo7.com)
@@ -20,4 +21,20 @@ public interface ListableBeanFactory extends BeanFactory {
      * @since 2.0
      */
     <T> List<T> getBeans(final Class<T> clazzType);
+
+    /**
+     * 获取Bean名称列表
+     * @param clazzType Class类型
+     * @return Bean名称列表
+     */
+    Set<String> getBeanNames(final Class clazzType);
+
+    /**
+     * 获取指定类型的Bean
+     * @param requiredType 执行的Class类型
+     * @param beanName Bean名称
+     * @param <T> 泛型
+     * @return Bean实例
+     */
+    <T> T getRequiredTypeBean(Class<T> requiredType, String beanName);
 }

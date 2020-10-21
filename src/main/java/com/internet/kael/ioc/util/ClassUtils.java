@@ -3,19 +3,32 @@
 package com.internet.kael.ioc.util;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.internet.kael.ioc.exception.IocRuntimeException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.AbstractCollection;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Queue;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -220,6 +233,102 @@ public class ClassUtils {
         return Stream.of(method.getParameters())
                 .map(Parameter::getName)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 获取Class对象的所有字段
+     * @param clazz Class对象
+     * @return 所有的字段
+     */
+    public static List<Field> getAllFields(Class clazz) {
+        Preconditions.checkNotNull(clazz);
+        List<Field> fields = Lists.newArrayList();
+        for (Class tmpClass = clazz; tmpClass != null; tmpClass = tmpClass.getSuperclass()) {
+            fields.addAll(Lists.newArrayList(tmpClass.getDeclaredFields()));
+        }
+        for (Field field : fields) {
+            field.setAccessible(true);
+        }
+        return fields;
+    }
+
+    /**
+     * 像指定的实例的字段中设置值
+     * @param instance 实例
+     * @param field 字段
+     * @param value 值
+     */
+    public static void setFieldValue(Object instance, Field field, Object value) {
+        Preconditions.checkNotNull(instance);
+        Preconditions.checkNotNull(field);
+        field.setAccessible(true);
+        try {
+            field.set(instance, value);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 指定类型的集合
+     * @param type 指定的集合类型
+     * @return 集合
+     */
+    public static Collection createCollection(Type type) {
+        return createCollection(type, 8);
+    }
+
+    private static Collection createCollection(Type type, int size) {
+        Class<?> rawClass = getRawClass(type);
+        Object list;
+        if (rawClass != AbstractCollection.class && rawClass != Collection.class) {
+            if (rawClass.isAssignableFrom(HashSet.class)) {
+                list = new HashSet(size);
+            } else if (rawClass.isAssignableFrom(LinkedHashSet.class)) {
+                list = new LinkedHashSet(size);
+            } else if (rawClass.isAssignableFrom(TreeSet.class)) {
+                list = new TreeSet();
+            } else if (rawClass.isAssignableFrom(ArrayList.class)) {
+                list = new ArrayList(size);
+            } else if (rawClass.isAssignableFrom(EnumSet.class)) {
+                Type itemType = getGenericType(type);
+                list = EnumSet.noneOf((Class)itemType);
+            } else if (rawClass.isAssignableFrom(Queue.class)) {
+                list = new LinkedList();
+            } else {
+                try {
+                    list = (Collection)rawClass.newInstance();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    throw new RuntimeException(ex);
+                }
+            }
+        } else {
+            list = new ArrayList(size);
+        }
+
+        return (Collection)list;
+    }
+
+    private static Class<?> getRawClass(Type type) {
+        if (type instanceof Class) {
+            return (Class)type;
+        } else if (type instanceof ParameterizedType) {
+            return getRawClass(((ParameterizedType)type).getRawType());
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public static Class getGenericType(Type type) {
+        Object itemType;
+        if (type instanceof ParameterizedType) {
+            itemType = ((ParameterizedType)type).getActualTypeArguments()[0];
+        } else {
+            itemType = Object.class;
+        }
+
+        return (Class)itemType;
     }
 
 }

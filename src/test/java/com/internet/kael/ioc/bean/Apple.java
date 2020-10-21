@@ -54,4 +54,8 @@ public class Apple {
                 "color='" + color + '\'' +
                 '}';
     }
+
+    public String getColor() {
+        return color;
+    }
 }
