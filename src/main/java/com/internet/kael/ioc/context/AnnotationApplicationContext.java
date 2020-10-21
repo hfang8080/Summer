@@ -149,6 +149,8 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
                 bd.setBeanSourceType(BeanSourceType.CONFIGURATION_BEAN);
                 bd.setConfigurationName(configBeanDefinition.getName());
                 bd.setConfigurationBeanMethod(methodName);
+                bd.setConfigBeanMethodParamTypes(method.getParameterTypes());
+                bd.setConfigBeanMethodParamRefs(ClassUtils.getMethodParamNames(method));
                 // 这里需要添加property/constructor对应的实现
                 bd.setLazyInit(Lazies.isLazy(method));
                 bd.setScope(Scopes.getScope(method));

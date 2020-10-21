@@ -70,7 +70,8 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
      * @return Bean名称集合
      * @since 2.0
      */
-    protected Set<String> getBeanNames(final Class clazzType) {
+    @Override
+    public Set<String> getBeanNames(final Class clazzType) {
         Preconditions.checkNotNull(clazzType);
         return typeBeanNamesMap.get(clazzType);
     }

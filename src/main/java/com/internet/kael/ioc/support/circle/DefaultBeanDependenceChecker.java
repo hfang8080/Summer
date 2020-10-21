@@ -78,6 +78,7 @@ public class DefaultBeanDependenceChecker implements BeanDependenceChecker {
      * （1）构造器依赖 {@link ConstructorArgsDefinition#getRef()}
      * （2）属性值依赖 {@link PropertyArgsDefinition#getRef()}
      * （3）如果是 config-bean，则 config 首先就是 bean 对应的依赖。 @since 14.0
+     * （4）如果是 config-bean，bean的方法参数也是该Bean的依赖。 @since 15.0
      * @param bd Bean定义
      * @since 10.0
      */
@@ -87,6 +88,8 @@ public class DefaultBeanDependenceChecker implements BeanDependenceChecker {
         if (beanSourceType == BeanSourceType.CONFIGURATION_BEAN) {
             AnnotationBeanDefinition annotationBeanDefinition = (AnnotationBeanDefinition) bd;
             dependencies.add(annotationBeanDefinition.getConfigurationName());
+            //
+            dependencies.addAll(annotationBeanDefinition.getConfigBeanMethodParamRefs());
         }
 
         List<ConstructorArgsDefinition> constructorArgsDefinitions = bd.getConstructorArgsDefinitions();

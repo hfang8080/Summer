@@ -2,6 +2,8 @@
 
 package com.internet.kael.ioc.model;
 
+import java.util.List;
+
 /**
  * @author Kael He (kael.he@alo7.com)
  * @since 12.0
@@ -33,4 +35,32 @@ public interface AnnotationBeanDefinition extends BeanDefinition {
      * @since 12.0
      */
     String getConfigurationBeanMethod();
+
+    /**
+     * 设置配置类中Bean的参数类型列表
+     * @param classes Bean的参数类型列表
+     * @since 15.0
+     */
+    void setConfigBeanMethodParamTypes(final Class[] classes);
+
+    /**
+     * 获取配置类中Bean的参数类型列表
+     * @return Bean的参数类型列表
+     * @since 15.0
+     */
+    Class[] getConfigBeanMethodParamTypes();
+
+    /**
+     * 设置配置类依赖的对象列表
+     * @param refs 依赖对象列表
+     * @since 15.0
+     */
+    void setConfigBeanMethodParamRefs(final List<String> refs);
+
+    /**
+     * 获取配置类依赖对象的列表
+     * @return 依赖对象的列表
+     * @since 15.0
+     */
+    List<String> getConfigBeanMethodParamRefs();
 }
