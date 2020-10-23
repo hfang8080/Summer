@@ -31,14 +31,27 @@ public class DefaultListableBeanFactory extends DefaultBeanFactory implements Li
         if (CollectionUtils.isEmpty(beanNames)) {
             throw new IocRuntimeException("RequiredType of " + requiredType.getName() + " beans not found!");
         }
-        if (beanNames.size() == 1) {
-            final String firstBeanName = beanNames.iterator().next();
-            return (T) getBean(firstBeanName);
+        if (beanNames.size() > 0) {
+            for (String bn : beanNames) {
+                if (StringUtils.equals(bn , beanName)) {
+                    return (T) getBean(bn);
+                }
+            }
         }
+
         if (StringUtils.isNotEmpty(beanName)) {
             return (T) getBean(beanName);
         }
+        return getPrimaryBean(requiredType);
+    }
 
-        throw new IocRuntimeException("RequiredType of " + requiredType.getName() + " must be unique!");
+    @Override
+    public <T> T getPrimaryBean(Class<T> requireType) {
+        return super.getPrimaryBean(requireType);
+    }
+
+    @Override
+    public String getPrimaryBeanName(Class<?> requireType) {
+        return super.getPrimaryBeanName(requireType);
     }
 }

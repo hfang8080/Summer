@@ -56,6 +56,7 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
      * @since 10.0
      */
     private BeanDependenceChecker beanDependenceChecker = new DefaultBeanDependenceChecker();
+
     /**
      * 初始化Bean定义
      *

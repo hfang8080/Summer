@@ -10,7 +10,6 @@ import com.internet.kael.ioc.exception.IocRuntimeException;
 import com.internet.kael.ioc.support.aware.BeanFactoryAware;
 import com.internet.kael.ioc.util.ClassUtils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -44,6 +43,7 @@ public class AutowiredBeanPostProcessor extends BeanPostProcessorAdaptor impleme
             }
             Autowired annotation = field.getAnnotation(Autowired.class);
             String filedBeanName = annotation.value();
+            System.out.println(filedBeanName);
             Class<?> fieldType = field.getType();
             Object fieldValue;
             if (Collection.class.isAssignableFrom(fieldType)) {

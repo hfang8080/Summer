@@ -43,6 +43,8 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
     private Map<Class, Set<String>> typeBeanNamesMap = new ConcurrentHashMap<>();
     private List<Pair<Object, BeanDefinition>> instanceBeanDefinitionPairs = Lists.newArrayList();
     private BeanDependenceChecker dependenceChecker = new DefaultBeanDependenceChecker();
+    private List<String> primaryBeanClassNames = Lists.newArrayList();
+    private Map<Class, String> primaryBeanNameMap = new ConcurrentHashMap<>();
 
     /**
      * 注册Bean
@@ -56,6 +58,8 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
         beanDefinitionMap.put(beanName, beanDefinition);
         // 注册Type -> BeanNames 存入Map
         registerTypeBeanNames(beanName, beanDefinition);
+        // 构建primary bean map
+        buildPrimaryBeanMapping(beanName, beanDefinition);
         // 通知所有beanName监听器
         notifyAllBeanNameAware(beanName);
         if (needEagerCreateSingletonBean(beanDefinition)) {
@@ -130,6 +134,14 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
         return getBean(beanName).getClass();
     }
 
+    protected String getPrimaryBeanName(Class<?> requireType) {
+        return primaryBeanNameMap.get(requireType);
+    }
+
+    protected <T> T getPrimaryBean(Class<T> requireType) {
+        return getBean(getPrimaryBeanName(requireType), requireType);
+    }
+
     /**
      * 判断是否需要延迟创建Bean
      * @param beanDefinition Bean定义
@@ -195,8 +207,8 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
     private Object registerSingletonBean(final String beanName, final BeanDefinition bd) {
         Object bean = beanMap.get(beanName);
         if (Objects.isNull(bean)) {
-            Object instance = createBean(bd);
-            beanMap.put(beanName, instance);
+            bean = createBean(bd);
+            beanMap.put(beanName, bean);
         }
         return bean;
     }
@@ -231,6 +243,22 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
             beanNames.add(beanName);
             typeBeanNamesMap.put(type, beanNames);
         }
+    }
+
+    private void buildPrimaryBeanMapping(final String beanName, final BeanDefinition bd) {
+        if (bd.isPrimary()) {
+            if (primaryBeanClassNames.contains(bd.getClassName())) {
+                throw new IocRuntimeException("Class: " + bd.getClassName() +
+                        " has a duplicate primary identity.");
+            }
+            primaryBeanClassNames.add(bd.getClassName());
+            primaryBeanNameMap.put(getType(bd), beanName);
+            // TODO bean name 是唯一键的验证
+        }
+        if (!primaryBeanClassNames.contains(bd.getClassName())) {
+            primaryBeanNameMap.put(getType(bd), beanName);
+        }
+
     }
 
     /**

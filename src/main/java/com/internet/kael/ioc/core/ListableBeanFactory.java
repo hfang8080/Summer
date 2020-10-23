@@ -37,4 +37,21 @@ public interface ListableBeanFactory extends BeanFactory {
      * @return Bean实例
      */
     <T> T getRequiredTypeBean(Class<T> requiredType, String beanName);
+
+    /**
+     * 获取主Bean
+     * @param requireType 需要的类型
+     * @param <T> 泛型
+     * @return 主Bean
+     * @since 17.0
+     */
+    <T> T getPrimaryBean(Class<T> requireType);
+
+    /**
+     * 获取主Bean名称
+     * @param requireType 所需类型
+     * @return 主Bean名称
+     * @since 17.0
+     */
+    String getPrimaryBeanName(Class<?> requireType);
 }

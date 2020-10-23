@@ -3,6 +3,7 @@
 package com.internet.kael.ioc.context;
 
 import com.internet.kael.ioc.bean.Apple;
+import com.internet.kael.ioc.bean.BookNamePrint;
 import com.internet.kael.ioc.config.AppAutoWiredListConfig;
 import com.internet.kael.ioc.config.AppAutowiredConfig;
 import com.internet.kael.ioc.config.AppConfig;
@@ -74,5 +75,12 @@ public class AnnotationApplicationContextTest {
         AnnotationApplicationContext ac = new AnnotationApplicationContext(AppAutoWiredListConfig.class);
         AppAutoWiredListConfig config = ac.getBean("appAutoWiredListConfig", AppAutoWiredListConfig.class);
         assertEquals(2, config.getApples().size());
+    }
+
+    @Test
+    public void primary() {
+        AnnotationApplicationContext ac = new AnnotationApplicationContext(BookNamePrint.class);
+        BookNamePrint bookNamePrint = ac.getBean("bookNamePrint", BookNamePrint.class);
+        assertEquals("Hello", bookNamePrint.name());
     }
 }

@@ -26,6 +26,7 @@ public class DefaultBeanDefinition implements BeanDefinition {
     private boolean abstractClass;
     private String parentName;
     private BeanSourceType beanSourceType;
+    private boolean primary;
 
     public static DefaultBeanDefinition newInstance() {
         return new DefaultBeanDefinition();
@@ -162,5 +163,15 @@ public class DefaultBeanDefinition implements BeanDefinition {
     @Override
     public void setBeanSourceType(BeanSourceType beanSourceType) {
         this.beanSourceType = beanSourceType;
+    }
+
+    @Override
+    public boolean isPrimary() {
+        return primary;
+    }
+
+    @Override
+    public void setPrimary(boolean primary) {
+        this.primary = primary;
     }
 }

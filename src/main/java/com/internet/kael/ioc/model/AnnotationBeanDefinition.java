@@ -63,4 +63,5 @@ public interface AnnotationBeanDefinition extends BeanDefinition {
      * @since 15.0
      */
     List<String> getConfigBeanMethodParamRefs();
+
 }

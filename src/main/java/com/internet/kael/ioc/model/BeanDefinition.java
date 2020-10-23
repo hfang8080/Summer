@@ -199,4 +199,18 @@ public interface BeanDefinition {
      */
     void setBeanSourceType(final BeanSourceType beanSourceType);
 
+    /**
+     * 判断是否是主Bean
+     * @return 是否
+     * @since 17.0
+     */
+    boolean isPrimary();
+
+    /**
+     * 这是是否为主Bean
+     * @param primary 是否为主Bean
+     * @since 17.0
+     */
+    void setPrimary(boolean primary);
+
 }

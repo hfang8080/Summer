@@ -11,11 +11,11 @@ import com.internet.kael.ioc.model.BeanDefinition;
 import com.internet.kael.ioc.util.ClassUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * @author Kael He (kael.he@alo7.com)
@@ -62,23 +62,17 @@ public class ConfigurationMethodInstanceBean extends AbstractNewInstanceBean {
     private void fillRefName(final BeanFactory beanFactory, final AnnotationBeanDefinition annotationBeanDefinition) {
         if (annotationBeanDefinition.getBeanSourceType() == BeanSourceType.CONFIGURATION_BEAN) {
             String beanName = annotationBeanDefinition.getName();
-            Class[] paramTypes = annotationBeanDefinition.getConfigBeanMethodParamTypes();
+            Class<?>[] paramTypes = annotationBeanDefinition.getConfigBeanMethodParamTypes();
             if (ArrayUtils.isNotEmpty(paramTypes)) {
                 List<String> paramRefs = annotationBeanDefinition.getConfigBeanMethodParamRefs();
                 for (int i = 0; i < paramTypes.length; i++) {
                     ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;
-                    Set<String> paramBeanNames = listableBeanFactory.getBeanNames(paramTypes[i]);
-                    if (CollectionUtils.isEmpty(paramBeanNames)) {
+                    String paramBeanName = listableBeanFactory.getPrimaryBeanName(paramTypes[i]);
+                    if (StringUtils.isEmpty(paramBeanName)) {
                         throw new IocRuntimeException(
                                 beanName + " configuration method param of [" + i + "] not found!");
                     }
-
-                    if (paramBeanNames.size() == 1) {
-                        paramRefs.set(i, paramBeanNames.iterator().next());
-                    } else {
-                        throw new IocRuntimeException(beanName +
-                                " configuration method param of [" + i + "] must be unique!");
-                    }
+                    paramRefs.set(i, paramBeanName);
                 }
             }
         }
