@@ -4,7 +4,6 @@ package com.internet.kael.ioc.context;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.internet.kael.ioc.annotation.Bean;
 import com.internet.kael.ioc.annotation.Configuration;
 import com.internet.kael.ioc.annotation.Import;
@@ -16,14 +15,15 @@ import com.internet.kael.ioc.support.name.BeanNameStrategy;
 import com.internet.kael.ioc.support.name.DefaultBeanNameStrategy;
 import com.internet.kael.ioc.util.ClassUtils;
 import com.internet.kael.ioc.util.Lazies;
+import com.internet.kael.ioc.util.Primaries;
 import com.internet.kael.ioc.util.Scopes;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * 注解类型的应用上下文
@@ -75,7 +75,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
      * @since 14.0
      */
     private List<Class> getConfigurations() {
-        Set<Class> configurations = Sets.newHashSet();
+        LinkedList<Class> configurations = Lists.newLinkedList();
         for (Class clazz : configClasses) {
             addAllImportClass(configurations, clazz);
         }
@@ -88,16 +88,22 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
      * @param configClass 配置类
      * @since 14.0
      */
-    private void addAllImportClass(final Set<Class> configurations, final Class configClass) {
-        configurations.add(configClass);
+    private void addAllImportClass(final LinkedList<Class> configurations, final Class configClass) {
+        if (!configurations.contains(configClass)) {
+            configurations.addFirst(configClass);
+        }
         if (configClass.isAnnotationPresent(Import.class)) {
             Import annotation = (Import) configClass.getAnnotation(Import.class);
             Class[] configClasses = annotation.value();
             for (Class clazz : configClasses) {
-                configurations.add(clazz);
-                addAllImportClass(configurations, clazz);
+                if (!configurations.contains(clazz)) {
+                    configurations.addFirst(clazz);
+                    addAllImportClass(configurations, clazz);
+                }
+
             }
         }
+
     }
 
     /**
@@ -114,6 +120,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         beanDefinition.setClassName(clazz.getName());
         beanDefinition.setLazyInit(Lazies.isLazy(clazz));
         beanDefinition.setScope(Scopes.getScope(clazz));
+        beanDefinition.setPrimary(Primaries.isPrimary(clazz));
         beanDefinition.setBeanSourceType(BeanSourceType.CONFIGURATION);
         String beanName = configuration.value();
         if (StringUtils.isEmpty(beanName)) {
@@ -153,6 +160,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
                 // 这里需要添加property/constructor对应的实现
                 bd.setLazyInit(Lazies.isLazy(method));
                 bd.setScope(Scopes.getScope(method));
+                bd.setPrimary(Primaries.isPrimary(method));
                 beanDefinitions.add(bd);
             }
         }

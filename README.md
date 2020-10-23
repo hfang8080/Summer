@@ -1,6 +1,6 @@
 ## 思路
-期望通过`@Autowried`注解直接注入`Bean`
+增加`@Primary`注解，在多个`Bean`供选择的时候，优先注入`@Primary`标识的`Bean`
 
 ## 实现
-- 增加`AutowiredBeanPostProcessor`用于实现`Bean`实例化后的属性注入处理
-- `BeanPostProcessorAdaptor`用于增加做`BeanPostProcessor`的适配器
+- `DefaultBeanFactory`增加对于`Primary Bean`的判断
+- `ConfigurationMethodInstanceBean` 修改获取注入Bean的优先级
