@@ -247,4 +247,9 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         return true;
 
     }
+
+    @Override
+    public Environment getEnvironment() {
+        return environment;
+    }
 }

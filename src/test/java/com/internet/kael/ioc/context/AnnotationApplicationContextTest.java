@@ -8,6 +8,7 @@ import com.internet.kael.ioc.config.AppAutoWiredListConfig;
 import com.internet.kael.ioc.config.AppAutowiredConfig;
 import com.internet.kael.ioc.config.AppConditionConfig;
 import com.internet.kael.ioc.config.AppConfig;
+import com.internet.kael.ioc.config.AppEnvAutowiredConfig;
 import com.internet.kael.ioc.config.AppProfileConfig;
 import com.internet.kael.ioc.config.AppleBeanConfig;
 import com.internet.kael.ioc.config.AppleMethodBeanRefConfig;
@@ -17,6 +18,8 @@ import com.internet.kael.ioc.constant.ProfileConstant;
 import com.internet.kael.ioc.support.environment.DefaultEnvironment;
 import junit.framework.TestCase;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -110,7 +113,15 @@ public class AnnotationApplicationContextTest {
         AnnotationApplicationContext ac2 = new AnnotationApplicationContext(environment2, AppProfileConfig.class);
         assertTrue(ac2.containsBean("book1"));
         assertTrue(ac2.containsBean("book2"));
+    }
 
-
+    @Test
+    public void autowireEnv() {
+        DefaultEnvironment environment = new DefaultEnvironment();
+        environment.setActiveProfiles(ProfileConstant.DEV);
+        AnnotationApplicationContext ac = new AnnotationApplicationContext(environment, AppEnvAutowiredConfig.class);
+        String profiles = Arrays.toString(ac.getBean("appEnvAutowiredConfig", AppEnvAutowiredConfig.class)
+                .getActiveProfiles());
+        assertEquals("[develop]", profiles);
     }
 }

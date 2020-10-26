@@ -197,6 +197,28 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
         return instance;
     }
 
+    protected void registerSingletonBean(final BeanDefinition beanDefinition, Object instance) {
+        Preconditions.checkNotNull(beanDefinition);
+        String beanName = beanDefinition.getName();
+        if (beanMap.containsKey(beanName)) {
+            return;
+        }
+        beanMap.put(beanName, instance);
+        Pair<Object, BeanDefinition> pair = Pair.of(instance, beanDefinition);
+        instanceBeanDefinitionPairs.add(pair);
+        Class type = getType(beanDefinition);
+        List<Class> superClasses = ClassUtils.getAllInterfaces(type, null);
+        beanDefinitionMap.put(beanName, beanDefinition);
+        typeBeanNamesMap.put(type, Sets.newHashSet(beanName));
+        primaryBeanNameMap.put(type, beanName);
+        for (Class clazz : superClasses) {
+            typeBeanNamesMap.put(clazz, Sets.newHashSet(beanName));
+            primaryBeanNameMap.put(clazz, beanName);
+        }
+        primaryBeanClassNames.add(beanName);
+        notifyAllBeanCreateAware(beanName, instance);
+    }
+
     /**
      * 注册单例对象，如果已经存在则直接返回
      *

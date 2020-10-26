@@ -4,14 +4,20 @@ package com.internet.kael.ioc.context;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.internet.kael.ioc.constant.BeanSourceType;
 import com.internet.kael.ioc.constant.Scope;
+import com.internet.kael.ioc.constant.SummerConstant;
 import com.internet.kael.ioc.core.DefaultListableBeanFactory;
 import com.internet.kael.ioc.exception.IocRuntimeException;
+import com.internet.kael.ioc.model.AnnotationBeanDefinition;
 import com.internet.kael.ioc.model.BeanDefinition;
+import com.internet.kael.ioc.model.DefaultAnnotationBeanDefinition;
 import com.internet.kael.ioc.model.PropertyArgsDefinition;
 import com.internet.kael.ioc.support.aware.ApplicationContextAware;
 import com.internet.kael.ioc.support.circle.BeanDependenceChecker;
 import com.internet.kael.ioc.support.circle.DefaultBeanDependenceChecker;
+import com.internet.kael.ioc.support.environment.DefaultEnvironment;
+import com.internet.kael.ioc.support.environment.Environment;
 import com.internet.kael.ioc.support.processor.ApplicationContextPostProcessor;
 import com.internet.kael.ioc.util.CollectionHelper;
 import org.apache.commons.collections4.CollectionUtils;
@@ -58,12 +64,19 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
     private BeanDependenceChecker beanDependenceChecker = new DefaultBeanDependenceChecker();
 
     /**
+     * 定义一个环境的Bean定义
+     * @since 20.0
+     */
+    private AnnotationBeanDefinition environmentBeanDefinition = buildEnvironmentBeanDefinition();
+
+    /**
      * 初始化Bean定义
      *
      * @since 4.0
      */
     protected void init() {
         List<BeanDefinition> beanDefinitions = buildBeanDefinitions();
+        beanDefinitions.add(environmentBeanDefinition);
         buildCreatableBeanDefinitions(beanDefinitions);
         creatableBeanDefinitions = postProcessor(creatableBeanDefinitions);
         beanDependenceChecker.registerBeanDefinition(creatableBeanDefinitions);
@@ -103,6 +116,8 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
      * @since 4.0
      */
     protected void registerBeanDefinitions(final List<BeanDefinition> beanDefinitions) {
+        // 注册环境为单例Bean
+        registerSingletonBean(environmentBeanDefinition, getEnvironment());
         if (CollectionUtils.isNotEmpty(beanDefinitions)) {
             for (BeanDefinition bd : beanDefinitions) {
                 // 填充默认值
@@ -111,6 +126,11 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
                 registerBeanDefinition(bd.getName(), bd);
             }
         }
+    }
+
+    @Override
+    public Environment getEnvironment() {
+        return new DefaultEnvironment();
     }
 
     /**
@@ -208,6 +228,16 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
         }
         child.setPropertyArgsDefinitions(childPropertyDefinitions);
         return child;
+    }
+
+    private AnnotationBeanDefinition buildEnvironmentBeanDefinition() {
+        AnnotationBeanDefinition annotationBeanDefinition = new DefaultAnnotationBeanDefinition();
+        annotationBeanDefinition.setBeanSourceType(BeanSourceType.SUPPORT);
+        annotationBeanDefinition.setScope(SummerConstant.SINGLETON);
+        annotationBeanDefinition.setName("environment");
+        annotationBeanDefinition.setLazyInit(false);
+        annotationBeanDefinition.setClassName(DefaultEnvironment.class.getName());
+        return annotationBeanDefinition;
     }
 
     /**
