@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.internet.kael'
-version '7.0'
+version '18.0'
 
 sourceCompatibility = 1.8
 

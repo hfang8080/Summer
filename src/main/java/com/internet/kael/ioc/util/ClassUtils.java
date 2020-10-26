@@ -11,10 +11,12 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
@@ -65,6 +68,21 @@ public class ClassUtils {
             throw new IocRuntimeException(e);
         }
     }
+//    /**
+//     * 根据Class对象的无参构造创建实例
+//     *
+//     * @param clazz Class对象
+//     * @return 对象实例
+//     * @since 1.0
+//     */
+//    public static Object newInstance(final Class clazz) {
+//        try {
+//            return clazz.newInstance();
+//        } catch (InstantiationException | IllegalAccessException e) {
+//            throw new IocRuntimeException(e);
+//        }
+//    }
+
     /**
      * 根据Class对象的无参构造创建实例
      *
@@ -72,7 +90,7 @@ public class ClassUtils {
      * @return 对象实例
      * @since 1.0
      */
-    public static Object newInstance(final Class clazz) {
+    public static <T> T newInstance(final Class<T> clazz) {
         try {
             return clazz.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
@@ -329,6 +347,30 @@ public class ClassUtils {
         }
 
         return (Class)itemType;
+    }
+
+    /**
+     * 获取对应的注解属性 map
+     * https://segmentfault.com/a/1190000011213222?utm_source=tag-newest
+     * @param annotation 直接
+     * @return map
+     * @since 0.1.31
+     */
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> getAnnotationAttributes(final Annotation annotation) {
+        try {
+            //获取 annotation 这个代理实例所持有的 InvocationHandler
+            InvocationHandler h = Proxy.getInvocationHandler(annotation);
+            // 获取 AnnotationInvocationHandler 的 memberValues 字段
+            Field hField = h.getClass().getDeclaredField("memberValues");
+            // 因为这个字段事 private final 修饰，所以要打开权限
+            hField.setAccessible(true);
+
+            // 获取 memberValues
+            return (Map<String, Object>) hField.get(h);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

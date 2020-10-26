@@ -4,13 +4,20 @@ package com.internet.kael.ioc.context;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.internet.kael.ioc.annotation.Bean;
+import com.internet.kael.ioc.annotation.Conditional;
 import com.internet.kael.ioc.annotation.Configuration;
 import com.internet.kael.ioc.annotation.Import;
 import com.internet.kael.ioc.constant.BeanSourceType;
 import com.internet.kael.ioc.model.AnnotationBeanDefinition;
 import com.internet.kael.ioc.model.BeanDefinition;
 import com.internet.kael.ioc.model.DefaultAnnotationBeanDefinition;
+import com.internet.kael.ioc.support.condition.Condition;
+import com.internet.kael.ioc.support.condition.DefaultConditionContext;
+import com.internet.kael.ioc.support.meta.AnnotationTypeMeta;
+import com.internet.kael.ioc.support.meta.ClassAnnotationTypeMeta;
+import com.internet.kael.ioc.support.meta.MethodAnnotationTypeMeta;
 import com.internet.kael.ioc.support.name.BeanNameStrategy;
 import com.internet.kael.ioc.support.name.DefaultBeanNameStrategy;
 import com.internet.kael.ioc.util.ClassUtils;
@@ -19,10 +26,14 @@ import com.internet.kael.ioc.util.Primaries;
 import com.internet.kael.ioc.util.Scopes;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -112,6 +123,12 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
      * @return Bean的定义
      */
     private Optional<AnnotationBeanDefinition> buildConfigurationBeanDefinition(final Class clazz) {
+        // 验证是否需要实例化对象
+        AnnotationTypeMeta meta = new ClassAnnotationTypeMeta(clazz);
+        if (!conditionMatches(meta)) {
+            return Optional.empty();
+        }
+
         if (!clazz.isAnnotationPresent(Configuration.class)) {
             return Optional.empty();
         }
@@ -140,6 +157,10 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         List<Method> methods = ClassUtils.getMethods(clazz);
         for (Method method : methods) {
             if (method.isAnnotationPresent(Bean.class)) {
+                AnnotationTypeMeta meta = new MethodAnnotationTypeMeta(method);
+                if (!conditionMatches(meta)) {
+                    continue;
+                }
                 Bean bean = method.getAnnotation(Bean.class);
                 String methodName = method.getName();
                 Class<?> returnType = method.getReturnType();
@@ -165,5 +186,47 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             }
         }
         return beanDefinitions;
+    }
+
+    /**
+     * 类级别是否匹配
+     * @param meta 判断条件是否匹配
+     * @return 是否
+     * @since 18.0
+     */
+    private boolean conditionMatches(final AnnotationTypeMeta meta) {
+        HashMap<Class<? extends Condition>, Map<String, Object>> map = Maps.newHashMap();
+        String conditionalName = Conditional.class.getName();
+
+        // 直接获取注解信息
+        if (meta.isAnnotated(conditionalName)) {
+            Conditional conditional = (Conditional) meta.getAnnotation(conditionalName);
+            map.put(conditional.value(), null);
+        }
+
+        // 获取拓展引用的注解信息
+        List<Annotation> refs = meta.getAnnotationRefs(conditionalName);
+        for (Annotation annotation : refs) {
+            Map<String, Object> attributes = ClassUtils.getAnnotationAttributes(annotation);
+            String name = annotation.annotationType().getName();
+            Annotation annotationReferenced = meta.getAnnotationReferenced(conditionalName, name);
+            if (Objects.isNull(annotationReferenced)) {
+                continue;
+            }
+            Conditional conditionalReferenced = (Conditional) annotationReferenced;
+            map.put(conditionalReferenced.value(), attributes);
+        }
+
+        // 循环处理
+        DefaultConditionContext conditionContext = new DefaultConditionContext(this, meta);
+        for (Map.Entry<Class<? extends Condition>, Map<String, Object>> entry : map.entrySet()) {
+            Condition condition = ClassUtils.newInstance(entry.getKey());
+            boolean match = condition.matches(conditionContext, entry.getValue());
+            if (!match) {
+                return false;
+            }
+        }
+        return true;
+
     }
 }

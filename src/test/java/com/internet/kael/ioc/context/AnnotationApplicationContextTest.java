@@ -6,6 +6,7 @@ import com.internet.kael.ioc.bean.Apple;
 import com.internet.kael.ioc.bean.BookNamePrint;
 import com.internet.kael.ioc.config.AppAutoWiredListConfig;
 import com.internet.kael.ioc.config.AppAutowiredConfig;
+import com.internet.kael.ioc.config.AppConditionConfig;
 import com.internet.kael.ioc.config.AppConfig;
 import com.internet.kael.ioc.config.AppleBeanConfig;
 import com.internet.kael.ioc.config.AppleMethodBeanRefConfig;
@@ -14,7 +15,9 @@ import com.internet.kael.ioc.config.LazyScopeConfig;
 import junit.framework.TestCase;
 import org.junit.Test;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -82,5 +85,12 @@ public class AnnotationApplicationContextTest {
         AnnotationApplicationContext ac = new AnnotationApplicationContext(BookNamePrint.class);
         BookNamePrint bookNamePrint = ac.getBean("bookNamePrint", BookNamePrint.class);
         assertEquals("Hello", bookNamePrint.name());
+    }
+
+    @Test
+    public void condition() {
+        AnnotationApplicationContext ac = new AnnotationApplicationContext(AppConditionConfig.class);
+        assertTrue(ac.containsBean("book1"));
+        assertFalse(ac.containsBean("book2"));
     }
 }

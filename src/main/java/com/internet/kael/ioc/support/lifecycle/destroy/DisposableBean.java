@@ -1,6 +1,6 @@
 // Copyright 2020 ALO7 Inc. All rights reserved.
 
-package com.internet.kael.ioc.support.destroy;
+package com.internet.kael.ioc.support.lifecycle.destroy;
 
 /**
  * @author Kael He (kael.he@alo7.com)

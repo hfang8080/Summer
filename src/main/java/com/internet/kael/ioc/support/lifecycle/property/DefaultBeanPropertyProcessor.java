@@ -1,6 +1,6 @@
 // Copyright 2020 ALO7 Inc. All rights reserved.
 
-package com.internet.kael.ioc.support.property;
+package com.internet.kael.ioc.support.lifecycle.property;
 
 import com.google.common.base.Preconditions;
 import com.internet.kael.ioc.core.BeanFactory;
