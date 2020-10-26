@@ -27,9 +27,17 @@ public class ValueBeanPropertyProcessor implements SingleBeanPropertyProcessor {
         String type = propertyArgsDefinition.getType();
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(type);
+
+        boolean fieldBase = propertyArgsDefinition.isFieldBase();
+        String fieldName = propertyArgsDefinition.getName();
         String value = propertyArgsDefinition.getValue();
         Class typeClazz = ClassUtils.getClass(type);
         Object valueObject = StringConverter.toObject(typeClazz, value);
-        ClassUtils.invokeSetterMethod(instance, name, valueObject);
+
+        if (fieldBase) {
+            ClassUtils.setValue(instance, fieldName, valueObject);
+        } else {
+            ClassUtils.invokeSetterMethod(instance, name, valueObject);
+        }
     }
 }

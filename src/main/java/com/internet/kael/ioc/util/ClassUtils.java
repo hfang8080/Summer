@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -387,5 +388,40 @@ public class ClassUtils {
         }
         return Lists.newArrayList(interfaces);
     }
+
+    public static void setValue(Object instance, String fieldName, Object fieldValue) {
+        try {
+            Class clazz = instance.getClass();
+            Map<String, Field> fieldNameMap = ClassUtils.getAllFieldMap(clazz);
+            Field field = fieldNameMap.get(fieldName);
+            field.setAccessible(true);
+            field.set(instance, fieldValue);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public static Map<String, Field> getAllFieldMap(Class clazz) {
+        List<Field> fieldList = getAllFieldList(clazz);
+        return CollectionHelper.newHashMap(fieldList, Field::getName, f -> f);
+    }
+
+    public static List<Field> getAllFieldList(Class clazz) {
+        List<Field> fieldList = new ArrayList<>();
+
+        for(Class tempClass = clazz; tempClass != null; tempClass = tempClass.getSuperclass()) {
+            fieldList.addAll(Lists.newArrayList(tempClass.getDeclaredFields()));
+        }
+
+        Iterator var3 = fieldList.iterator();
+
+        while(var3.hasNext()) {
+            Field field = (Field)var3.next();
+            field.setAccessible(true);
+        }
+
+        return fieldList;
+    }
+
 
 }

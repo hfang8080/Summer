@@ -11,6 +11,7 @@ public class DefaultPropertyArgsDefinition implements PropertyArgsDefinition {
     private String value;
     private String type;
     private String ref;
+    private boolean fieldBase;
     @Override
     public String getName() {
         return name;
@@ -49,5 +50,14 @@ public class DefaultPropertyArgsDefinition implements PropertyArgsDefinition {
     @Override
     public void setRef(String ref) {
         this.ref = ref;
+    }
+
+    @Override
+    public boolean isFieldBase() {
+        return fieldBase;
+    }
+
+    public void setFieldBase(boolean fieldBase) {
+        this.fieldBase = fieldBase;
     }
 }
