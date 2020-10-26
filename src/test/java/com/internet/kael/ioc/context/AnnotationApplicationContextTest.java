@@ -8,10 +8,13 @@ import com.internet.kael.ioc.config.AppAutoWiredListConfig;
 import com.internet.kael.ioc.config.AppAutowiredConfig;
 import com.internet.kael.ioc.config.AppConditionConfig;
 import com.internet.kael.ioc.config.AppConfig;
+import com.internet.kael.ioc.config.AppProfileConfig;
 import com.internet.kael.ioc.config.AppleBeanConfig;
 import com.internet.kael.ioc.config.AppleMethodBeanRefConfig;
 import com.internet.kael.ioc.config.ImportAppConfig;
 import com.internet.kael.ioc.config.LazyScopeConfig;
+import com.internet.kael.ioc.constant.ProfileConstant;
+import com.internet.kael.ioc.support.environment.DefaultEnvironment;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -92,5 +95,22 @@ public class AnnotationApplicationContextTest {
         AnnotationApplicationContext ac = new AnnotationApplicationContext(AppConditionConfig.class);
         assertTrue(ac.containsBean("book1"));
         assertFalse(ac.containsBean("book2"));
+    }
+
+    @Test
+    public void profile() {
+        DefaultEnvironment environment1 = new DefaultEnvironment();
+        environment1.setActiveProfiles(ProfileConstant.DEV);
+        AnnotationApplicationContext ac = new AnnotationApplicationContext(environment1, AppProfileConfig.class);
+        assertTrue(ac.containsBean("book1"));
+        assertFalse(ac.containsBean("book2"));
+
+        DefaultEnvironment environment2 = new DefaultEnvironment();
+        environment2.setActiveProfiles(ProfileConstant.DEV, ProfileConstant.TEST);
+        AnnotationApplicationContext ac2 = new AnnotationApplicationContext(environment2, AppProfileConfig.class);
+        assertTrue(ac2.containsBean("book1"));
+        assertTrue(ac2.containsBean("book2"));
+
+
     }
 }

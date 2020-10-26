@@ -1,6 +1,9 @@
 ## 思路
-增加`@Conditional`来实现对于条件化实例`Bean`的支持
+增加`@Profile`来实现通过配置环境来决定是否实例化`Bean`
 
 ## 实现
-- 增加`ConditionContext`来作为Condition的上下文，保存着`Condition`所需要的所有的信息
-- 在`AnnotationApplicationContext`中提供对于`@Conditional`注解的解析
+- 增加`Enviroment`来作为环境的抽象概念
+- 增加`ConfigurableEnvironment`作为可配置的环境概念
+- 增加`DefaultEnvironment`作为默认环境实现
+- 增加`EnvironmentCondition`作为判断是否实例化的判断
+- `AnnotationApplicationContext`增加对于`Environment`的支持

@@ -3,6 +3,7 @@
 package com.internet.kael.ioc.support.condition;
 
 import com.internet.kael.ioc.core.BeanFactory;
+import com.internet.kael.ioc.support.environment.Environment;
 import com.internet.kael.ioc.support.meta.AnnotationTypeMeta;
 
 /**
@@ -22,4 +23,11 @@ public interface ConditionContext {
      * @since 18.0
      */
     AnnotationTypeMeta getAnnotationTypeMeta();
+
+    /**
+     * 获取环境
+     * @return 环境信息
+     * @since 19.0
+     */
+    Environment getEnvironment();
 }

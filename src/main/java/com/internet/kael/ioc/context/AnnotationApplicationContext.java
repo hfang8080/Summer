@@ -9,12 +9,17 @@ import com.internet.kael.ioc.annotation.Bean;
 import com.internet.kael.ioc.annotation.Conditional;
 import com.internet.kael.ioc.annotation.Configuration;
 import com.internet.kael.ioc.annotation.Import;
+import com.internet.kael.ioc.annotation.Profile;
 import com.internet.kael.ioc.constant.BeanSourceType;
 import com.internet.kael.ioc.model.AnnotationBeanDefinition;
 import com.internet.kael.ioc.model.BeanDefinition;
 import com.internet.kael.ioc.model.DefaultAnnotationBeanDefinition;
 import com.internet.kael.ioc.support.condition.Condition;
 import com.internet.kael.ioc.support.condition.DefaultConditionContext;
+import com.internet.kael.ioc.support.condition.ProfileCondition;
+import com.internet.kael.ioc.support.environment.ConfigurableEnvironment;
+import com.internet.kael.ioc.support.environment.DefaultEnvironment;
+import com.internet.kael.ioc.support.environment.Environment;
 import com.internet.kael.ioc.support.meta.AnnotationTypeMeta;
 import com.internet.kael.ioc.support.meta.ClassAnnotationTypeMeta;
 import com.internet.kael.ioc.support.meta.MethodAnnotationTypeMeta;
@@ -50,15 +55,27 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     private final Class[] configClasses;
 
     /**
+     * 环境
+     * @since 19.0
+     */
+    private final Environment environment;
+
+    /**
      * // TODO 使得beanNameStrategy为单例
      * Bean名称的命名策略
      * @since 11.0
      */
     private BeanNameStrategy beanNameStrategy = new DefaultBeanNameStrategy();
 
-    public AnnotationApplicationContext(Class ... configClasses) {
+    public AnnotationApplicationContext(Class... configClasses) {
+        this(new DefaultEnvironment(), configClasses);
+    }
+
+    public AnnotationApplicationContext(Environment environment, Class... configClasses) {
         Preconditions.checkNotNull(configClasses);
+        Preconditions.checkNotNull(environment);
         this.configClasses = configClasses;
+        this.environment = environment;
         super.init();
     }
 
@@ -218,7 +235,8 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         }
 
         // 循环处理
-        DefaultConditionContext conditionContext = new DefaultConditionContext(this, meta);
+
+        DefaultConditionContext conditionContext = new DefaultConditionContext(this, meta, environment);
         for (Map.Entry<Class<? extends Condition>, Map<String, Object>> entry : map.entrySet()) {
             Condition condition = ClassUtils.newInstance(entry.getKey());
             boolean match = condition.matches(conditionContext, entry.getValue());
