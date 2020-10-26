@@ -3,13 +3,13 @@
 package com.internet.kael.ioc.support.condition;
 
 import com.internet.kael.ioc.core.BeanFactory;
-import com.internet.kael.ioc.support.environment.Environment;
+import com.internet.kael.ioc.support.environment.EnvironmentCapable;
 import com.internet.kael.ioc.support.meta.AnnotationTypeMeta;
 
 /**
  * @author Kael He (kael.he@alo7.com)
  */
-public interface ConditionContext {
+public interface ConditionContext extends EnvironmentCapable {
     /**
      * 获取对象工厂信息
      * @return 工厂信息
@@ -24,10 +24,4 @@ public interface ConditionContext {
      */
     AnnotationTypeMeta getAnnotationTypeMeta();
 
-    /**
-     * 获取环境
-     * @return 环境信息
-     * @since 19.0
-     */
-    Environment getEnvironment();
 }

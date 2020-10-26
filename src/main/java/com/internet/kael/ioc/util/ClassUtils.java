@@ -4,6 +4,7 @@ package com.internet.kael.ioc.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.internet.kael.ioc.exception.IocRuntimeException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -371,6 +373,19 @@ public class ClassUtils {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static List<Class> getAllInterfaces(Class clazz, Set<Class> interfaces) {
+        interfaces = interfaces == null ? Sets.newHashSet() : interfaces;
+        Class[] ifs = clazz.getInterfaces();
+        if (ifs.length > 0) {
+            interfaces.addAll(Arrays.asList(ifs));
+        }
+
+        for (Class interf: ifs) {
+            interfaces.addAll(getAllInterfaces(interf, interfaces));
+        }
+        return Lists.newArrayList(interfaces);
     }
 
 }
