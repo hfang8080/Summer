@@ -9,15 +9,17 @@ import com.internet.kael.ioc.annotation.Bean;
 import com.internet.kael.ioc.annotation.Conditional;
 import com.internet.kael.ioc.annotation.Configuration;
 import com.internet.kael.ioc.annotation.Import;
-import com.internet.kael.ioc.annotation.Profile;
+import com.internet.kael.ioc.annotation.PropertiesResource;
+import com.internet.kael.ioc.annotation.Value;
 import com.internet.kael.ioc.constant.BeanSourceType;
+import com.internet.kael.ioc.exception.IocRuntimeException;
 import com.internet.kael.ioc.model.AnnotationBeanDefinition;
 import com.internet.kael.ioc.model.BeanDefinition;
 import com.internet.kael.ioc.model.DefaultAnnotationBeanDefinition;
+import com.internet.kael.ioc.model.DefaultPropertyArgsDefinition;
+import com.internet.kael.ioc.model.PropertyArgsDefinition;
 import com.internet.kael.ioc.support.condition.Condition;
 import com.internet.kael.ioc.support.condition.DefaultConditionContext;
-import com.internet.kael.ioc.support.condition.ProfileCondition;
-import com.internet.kael.ioc.support.environment.ConfigurableEnvironment;
 import com.internet.kael.ioc.support.environment.DefaultEnvironment;
 import com.internet.kael.ioc.support.environment.Environment;
 import com.internet.kael.ioc.support.meta.AnnotationTypeMeta;
@@ -25,14 +27,23 @@ import com.internet.kael.ioc.support.meta.ClassAnnotationTypeMeta;
 import com.internet.kael.ioc.support.meta.MethodAnnotationTypeMeta;
 import com.internet.kael.ioc.support.name.BeanNameStrategy;
 import com.internet.kael.ioc.support.name.DefaultBeanNameStrategy;
+import com.internet.kael.ioc.support.resolver.PropertiesPropertySource;
+import com.internet.kael.ioc.support.resolver.PropertyResource;
+import com.internet.kael.ioc.support.resolver.PropertySourcesPropertyResolver;
 import com.internet.kael.ioc.util.ClassUtils;
 import com.internet.kael.ioc.util.Lazies;
 import com.internet.kael.ioc.util.Primaries;
 import com.internet.kael.ioc.util.Scopes;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -40,6 +51,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 注解类型的应用上下文
@@ -95,6 +109,70 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             }
         }
         return beanDefinitions;
+    }
+
+    /**
+     * 构建参数信息
+     * @since 21.0
+     */
+    private List<PropertyArgsDefinition> buildConfigPropertyArgDefinitions(final Class clazz) {
+        List<PropertyArgsDefinition> result = Lists.newArrayList();
+        List<PropertyResource> propertyResources = buildPropertyResource(clazz);
+        PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(propertyResources);
+        List<Field> fields = ClassUtils.getAllFields(clazz);
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(Value.class)) {
+                Value value = field.getAnnotation(Value.class);
+                String expression = value.value();
+                String actualValue = resolver.resolveRequiredPlaceholders(expression);
+                PropertyArgsDefinition argDefinition = new DefaultPropertyArgsDefinition();
+                argDefinition.setName(field.getName());
+                argDefinition.setFieldBase(true);
+                argDefinition.setType(field.getType().getName());
+                argDefinition.setValue(actualValue);
+                result.add(argDefinition);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 构建属性对
+     * @since 21.0
+     */
+    private List<PropertyResource> buildPropertyResource(final Class clazz) {
+        if (!clazz.isAnnotationPresent(PropertiesResource.class)) {
+            return Collections.emptyList();
+        }
+
+        PropertiesResource propertiesResource = (PropertiesResource) clazz.getAnnotation(PropertiesResource.class);
+        String[] resources = propertiesResource.value();
+        if (ArrayUtils.isEmpty(resources)) {
+            return Collections.emptyList();
+        }
+        return Stream.of(resources)
+                .map(path -> {
+                    Properties properties = this.getProperties(path);
+                    return new PropertiesPropertySource(path, properties);
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 加载配置文件信息
+     * @param path 路径
+     * @return 结果
+     * @since 0.1.10
+     */
+    private Properties getProperties(final String path) {
+        try(InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)){
+            Properties properties = new Properties();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+            properties.load(inputStreamReader);
+            return properties;
+        } catch (IOException e) {
+            throw new IocRuntimeException("Load properties file fail of path: " + path);
+        }
     }
 
     /**
@@ -161,6 +239,8 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             beanName = beanNameStrategy.generateBeanName(beanDefinition);
         }
         beanDefinition.setName(beanName);
+        List<PropertyArgsDefinition> propertyArgsDefinitions = buildConfigPropertyArgDefinitions(clazz);
+        beanDefinition.setPropertyArgsDefinitions(propertyArgsDefinitions);
         return Optional.of(beanDefinition);
     }
 

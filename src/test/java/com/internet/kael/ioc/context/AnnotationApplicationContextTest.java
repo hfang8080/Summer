@@ -10,13 +10,17 @@ import com.internet.kael.ioc.config.AppConditionConfig;
 import com.internet.kael.ioc.config.AppConfig;
 import com.internet.kael.ioc.config.AppEnvAutowiredConfig;
 import com.internet.kael.ioc.config.AppProfileConfig;
+import com.internet.kael.ioc.config.AppPropertyResourceValueConfig;
+import com.internet.kael.ioc.config.AppPropertyValueConfig;
 import com.internet.kael.ioc.config.AppleBeanConfig;
 import com.internet.kael.ioc.config.AppleMethodBeanRefConfig;
 import com.internet.kael.ioc.config.ImportAppConfig;
 import com.internet.kael.ioc.config.LazyScopeConfig;
 import com.internet.kael.ioc.constant.ProfileConstant;
+import com.internet.kael.ioc.core.BeanFactory;
 import com.internet.kael.ioc.support.environment.DefaultEnvironment;
 import junit.framework.TestCase;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -123,5 +127,21 @@ public class AnnotationApplicationContextTest {
         String profiles = Arrays.toString(ac.getBean("appEnvAutowiredConfig", AppEnvAutowiredConfig.class)
                 .getActiveProfiles());
         assertEquals("[develop]", profiles);
+    }
+
+    @Test
+    public void propertyValue() {
+        AnnotationApplicationContext ac = new AnnotationApplicationContext(AppPropertyValueConfig.class);
+        AppPropertyValueConfig config = ac.getBean("appPropertyValueConfig", AppPropertyValueConfig.class);
+        assertEquals("kael", config.getName());
+    }
+
+    @Test
+    public void propertyResourceValue() {
+        BeanFactory devBeanFactory = new AnnotationApplicationContext(AppPropertyResourceValueConfig.class);
+        AppPropertyResourceValueConfig appPropertyResourceValueConfig = devBeanFactory
+                .getBean("appPropertyResourceValueConfig", AppPropertyResourceValueConfig.class);
+
+        Assert.assertEquals("hello", appPropertyResourceValueConfig.getName());
     }
 }
