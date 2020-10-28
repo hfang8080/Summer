@@ -5,7 +5,9 @@ package com.internet.kael.ioc.context;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.internet.kael.ioc.annotation.Bean;
+import com.internet.kael.ioc.annotation.ComponentScan;
 import com.internet.kael.ioc.annotation.Conditional;
 import com.internet.kael.ioc.annotation.Configuration;
 import com.internet.kael.ioc.annotation.Import;
@@ -30,6 +32,9 @@ import com.internet.kael.ioc.support.name.DefaultBeanNameStrategy;
 import com.internet.kael.ioc.support.resolver.PropertiesPropertySource;
 import com.internet.kael.ioc.support.resolver.PropertyResource;
 import com.internet.kael.ioc.support.resolver.PropertySourcesPropertyResolver;
+import com.internet.kael.ioc.support.scan.AnnotationBeanDefinitionScanner;
+import com.internet.kael.ioc.support.scan.ClassPathAnnotationBeanDefinitionScanner;
+import com.internet.kael.ioc.support.scan.DefaultBeanDefinitionScannerContext;
 import com.internet.kael.ioc.util.ClassUtils;
 import com.internet.kael.ioc.util.Lazies;
 import com.internet.kael.ioc.util.Primaries;
@@ -44,6 +49,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -52,6 +58,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -75,11 +82,16 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     private final Environment environment;
 
     /**
-     * // TODO 使得beanNameStrategy为单例
      * Bean名称的命名策略
      * @since 11.0
      */
     private BeanNameStrategy beanNameStrategy = new DefaultBeanNameStrategy();
+
+    /**
+     * 包扫描器
+     * @since 22.0
+     */
+    private AnnotationBeanDefinitionScanner scanner = new ClassPathAnnotationBeanDefinitionScanner();
 
     public AnnotationApplicationContext(Class... configClasses) {
         this(new DefaultEnvironment(), configClasses);
@@ -105,10 +117,32 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
                     beanDefinitions.add(configBeanDefinition);
                     List<AnnotationBeanDefinition> bds = buildBeansInConfiguration(configBeanDefinition, clazz);
                     beanDefinitions.addAll(bds);
+
+                    Set<AnnotationBeanDefinition> scannedBeanDefinitions = buildScanBeanDefinitions(clazz);
+                    beanDefinitions.addAll(scannedBeanDefinitions);
                 }
             }
         }
         return beanDefinitions;
+    }
+
+    /**
+     * 构建扫描对象集合
+     * @param clazz 类
+     * @since 22.0
+     */
+    private Set<AnnotationBeanDefinition> buildScanBeanDefinitions(final Class clazz) {
+        Set<AnnotationBeanDefinition> annotationBeanDefinitions = Sets.newHashSet();
+        if (!clazz.isAnnotationPresent(ComponentScan.class)) {
+            return annotationBeanDefinitions;
+        }
+        ComponentScan componentScan = (ComponentScan) clazz.getAnnotation(ComponentScan.class);
+        DefaultBeanDefinitionScannerContext scannerContext = new DefaultBeanDefinitionScannerContext();
+        scannerContext.setScanPackages(Arrays.asList(componentScan.value()));
+        scannerContext.setBeanNameStrategy(componentScan.beanNameStrategy());
+        scannerContext.setExcludes(Arrays.asList(componentScan.excludes()));
+        scannerContext.setIncludes(Arrays.asList(componentScan.includes()));
+        return scanner.scan(scannerContext);
     }
 
     /**
