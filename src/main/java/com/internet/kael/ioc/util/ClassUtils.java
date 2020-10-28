@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.util;
 
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * @author Kael He(kael.he@alo7.com)
+ * @author Kael He(h_fang8080@163.com)
  * @since 1.0
  */
 public class ClassUtils {
@@ -103,7 +103,8 @@ public class ClassUtils {
 
     /**
      * 获取指定类拥有指定注解的函数
-     * @param clazz 指定类
+     *
+     * @param clazz           指定类
      * @param annotationClazz 指定注解
      * @return 函数
      */
@@ -112,7 +113,7 @@ public class ClassUtils {
         if (ArrayUtils.isEmpty(methods)) {
             return Optional.empty();
         }
-        for (Method method: methods) {
+        for (Method method : methods) {
             if (method.isAnnotationPresent(annotationClazz)) {
                 return Optional.of(method);
             }
@@ -122,7 +123,8 @@ public class ClassUtils {
 
     /**
      * 获取指定类拥有指定注解的函数
-     * @param clazz 指定类
+     *
+     * @param clazz      指定类
      * @param methodName 方法名
      * @return 函数
      */
@@ -131,7 +133,7 @@ public class ClassUtils {
         if (ArrayUtils.isEmpty(methods)) {
             return Optional.empty();
         }
-        for (Method method: methods) {
+        for (Method method : methods) {
             if (StringUtils.equals(method.getName(), methodName)) {
                 return Optional.of(method);
             }
@@ -141,7 +143,8 @@ public class ClassUtils {
 
     /**
      * 反射调用指定实例的无参方法
-     * @param method 指定函数
+     *
+     * @param method   指定函数
      * @param instance 指定实例
      * @return 返回值
      */
@@ -162,9 +165,10 @@ public class ClassUtils {
 
     /**
      * 反射调用指定方法。
+     *
      * @param instance 实例对象
-     * @param method 方法
-     * @param params 参数
+     * @param method   方法
+     * @param params   参数
      * @return 调用的返回结果
      */
     public static Object invokeMethod(Object instance, Method method, Object... params) {
@@ -181,7 +185,8 @@ public class ClassUtils {
 
     /**
      * 获取构造函数
-     * @param clazz Class对象
+     *
+     * @param clazz      Class对象
      * @param paramTypes 参数的Class对象
      * @return 构造函数
      */
@@ -197,8 +202,9 @@ public class ClassUtils {
 
     /**
      * 通过构造函数实例化
+     *
      * @param constructor 构造函数
-     * @param args 参数
+     * @param args        参数
      * @return 实例
      */
     public static Object newInstance(Constructor constructor, Object... args) {
@@ -213,16 +219,19 @@ public class ClassUtils {
 
     /**
      * 调用setter函数
-     * @param instance 需要设置属性的实例
+     *
+     * @param instance     需要设置属性的实例
      * @param propertyName 属性名
-     * @param value 值
+     * @param value        值
      */
     public static void invokeSetterMethod(final Object instance,
                                           final String propertyName,
                                           final Object value) {
         Preconditions.checkNotNull(instance);
         Preconditions.checkNotNull(propertyName);
-        if (Objects.isNull(value)) return;
+        if (Objects.isNull(value)) {
+            return;
+        }
         Class<?> clazz = instance.getClass();
         String methodName = SET + StringUtils.capitalize(propertyName);
         Class<?> paramType = value.getClass();
@@ -237,6 +246,7 @@ public class ClassUtils {
 
     /**
      * 获取class下面的所有的方法名
+     *
      * @param clazz Class对象
      * @return 所有方法名
      */
@@ -247,6 +257,7 @@ public class ClassUtils {
 
     /**
      * 获取方法的所有参数的名称。
+     *
      * @param method 方法
      * @return 方法所有的参数的名称
      */
@@ -258,6 +269,7 @@ public class ClassUtils {
 
     /**
      * 获取Class对象的所有字段
+     *
      * @param clazz Class对象
      * @return 所有的字段
      */
@@ -275,9 +287,10 @@ public class ClassUtils {
 
     /**
      * 像指定的实例的字段中设置值
+     *
      * @param instance 实例
-     * @param field 字段
-     * @param value 值
+     * @param field    字段
+     * @param value    值
      */
     public static void setFieldValue(Object instance, Field field, Object value) {
         Preconditions.checkNotNull(instance);
@@ -292,6 +305,7 @@ public class ClassUtils {
 
     /**
      * 指定类型的集合
+     *
      * @param type 指定的集合类型
      * @return 集合
      */
@@ -313,12 +327,12 @@ public class ClassUtils {
                 list = new ArrayList(size);
             } else if (rawClass.isAssignableFrom(EnumSet.class)) {
                 Type itemType = getGenericType(type);
-                list = EnumSet.noneOf((Class)itemType);
+                list = EnumSet.noneOf((Class) itemType);
             } else if (rawClass.isAssignableFrom(Queue.class)) {
                 list = new LinkedList();
             } else {
                 try {
-                    list = (Collection)rawClass.newInstance();
+                    list = (Collection) rawClass.newInstance();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     throw new RuntimeException(ex);
@@ -328,14 +342,14 @@ public class ClassUtils {
             list = new ArrayList(size);
         }
 
-        return (Collection)list;
+        return (Collection) list;
     }
 
     private static Class<?> getRawClass(Type type) {
         if (type instanceof Class) {
-            return (Class)type;
+            return (Class) type;
         } else if (type instanceof ParameterizedType) {
-            return getRawClass(((ParameterizedType)type).getRawType());
+            return getRawClass(((ParameterizedType) type).getRawType());
         } else {
             throw new UnsupportedOperationException();
         }
@@ -344,17 +358,18 @@ public class ClassUtils {
     public static Class getGenericType(Type type) {
         Object itemType;
         if (type instanceof ParameterizedType) {
-            itemType = ((ParameterizedType)type).getActualTypeArguments()[0];
+            itemType = ((ParameterizedType) type).getActualTypeArguments()[0];
         } else {
             itemType = Object.class;
         }
 
-        return (Class)itemType;
+        return (Class) itemType;
     }
 
     /**
      * 获取对应的注解属性 map
      * https://segmentfault.com/a/1190000011213222?utm_source=tag-newest
+     *
      * @param annotation 直接
      * @return map
      * @since 0.1.31
@@ -383,7 +398,7 @@ public class ClassUtils {
             interfaces.addAll(Arrays.asList(ifs));
         }
 
-        for (Class interf: ifs) {
+        for (Class interf : ifs) {
             interfaces.addAll(getAllInterfaces(interf, interfaces));
         }
         return Lists.newArrayList(interfaces);
@@ -409,19 +424,18 @@ public class ClassUtils {
     public static List<Field> getAllFieldList(Class clazz) {
         List<Field> fieldList = new ArrayList<>();
 
-        for(Class tempClass = clazz; tempClass != null; tempClass = tempClass.getSuperclass()) {
+        for (Class tempClass = clazz; tempClass != null; tempClass = tempClass.getSuperclass()) {
             fieldList.addAll(Lists.newArrayList(tempClass.getDeclaredFields()));
         }
 
         Iterator var3 = fieldList.iterator();
 
-        while(var3.hasNext()) {
-            Field field = (Field)var3.next();
+        while (var3.hasNext()) {
+            Field field = (Field) var3.next();
             field.setAccessible(true);
         }
 
         return fieldList;
     }
-
 
 }

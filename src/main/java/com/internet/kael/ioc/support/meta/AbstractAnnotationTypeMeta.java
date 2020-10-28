@@ -1,5 +1,6 @@
-package com.internet.kael.ioc.support.meta;
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
+package com.internet.kael.ioc.support.meta;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -22,20 +23,21 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p> project: Summer-AnnotationMeta </p>
  * <p> create on 2019/11/29 23:04 </p>
  *
- * @author Kael He (kael.he@alo7.com)
+ * @author Kael He (h_fang8080@163.com)
  * @since 18.0
  */
 public abstract class AbstractAnnotationTypeMeta implements AnnotationTypeMeta {
 
     /**
      * 注解引用 map
+     *
      * @since 0.1.52
      */
     private Map<String, Annotation> annotationRefMap;
 
     /**
      * 获取对应的注解信息列表
-     *
+     * <p>
      * （1）这里其实没有必要使用 {@link Map} 因为一般注解数量不会太多，只是数组性能反而更好。
      *
      * @return 注解数组
@@ -64,7 +66,7 @@ public abstract class AbstractAnnotationTypeMeta implements AnnotationTypeMeta {
     @Override
     public boolean isAnnotatedOrRef(String annotationName) {
         // 直接注解
-        if(isAnnotated(annotationName)) {
+        if (isAnnotated(annotationName)) {
             return true;
         }
 
@@ -75,12 +77,12 @@ public abstract class AbstractAnnotationTypeMeta implements AnnotationTypeMeta {
 
     @Override
     public boolean isAnnotatedOrRef(List<Class> classList) {
-        if(CollectionUtils.isEmpty(classList)) {
+        if (CollectionUtils.isEmpty(classList)) {
             return false;
         }
 
-        for(Class clazz : classList) {
-            if(isAnnotatedOrRef(clazz.getName())) {
+        for (Class clazz : classList) {
+            if (isAnnotatedOrRef(clazz.getName())) {
                 return true;
             }
         }
@@ -99,7 +101,7 @@ public abstract class AbstractAnnotationTypeMeta implements AnnotationTypeMeta {
 
         // 直接注解
         Annotation annotation = getAnnotation(annotationName);
-        if(Objects.nonNull(annotation)) {
+        if (Objects.nonNull(annotation)) {
             annotationSet.add(annotation);
         }
 
@@ -113,7 +115,8 @@ public abstract class AbstractAnnotationTypeMeta implements AnnotationTypeMeta {
 
     /**
      * 获取注解对应信息
-     * @param annotations 注解数组
+     *
+     * @param annotations    注解数组
      * @param annotationName 指定注解名称
      * @return 结果信息
      * @since 0.1.52
@@ -125,18 +128,19 @@ public abstract class AbstractAnnotationTypeMeta implements AnnotationTypeMeta {
 
     /**
      * 获取注解对应信息
-     * @param annotations 注解列表
+     *
+     * @param annotations    注解列表
      * @param annotationName 指定注解名称
      * @return 结果信息
      * @since 18.0
      */
     private Optional<Annotation> getAnnotationOpt(final List<Annotation> annotations, final String annotationName) {
-        if(CollectionUtils.isEmpty(annotations)) {
+        if (CollectionUtils.isEmpty(annotations)) {
             return Optional.empty();
         }
 
-        for(Annotation annotation : annotations) {
-            if(annotation.annotationType().getName().equals(annotationName)) {
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType().getName().equals(annotationName)) {
                 return Optional.ofNullable(annotation);
             }
         }
@@ -147,13 +151,13 @@ public abstract class AbstractAnnotationTypeMeta implements AnnotationTypeMeta {
     public List<Annotation> getAnnotationRefs(String annotationName) {
         Set<Annotation> annotationSet = Sets.newHashSet();
 
-        if(ArrayUtils.isNotEmpty(getAnnotations())) {
-            for(Annotation annotation : getAnnotations()) {
+        if (ArrayUtils.isNotEmpty(getAnnotations())) {
+            for (Annotation annotation : getAnnotations()) {
                 Annotation[] annotationRefs = annotation.annotationType().getAnnotations();
                 Optional<Annotation> annotationRefOptional = getAnnotationOpt(annotationRefs, annotationName);
-                if(annotationRefOptional.isPresent()) {
+                if (annotationRefOptional.isPresent()) {
                     // 添加引用属性（注解全称+引用的注解全称）
-                    final String key = annotationName+annotation.annotationType().getName();
+                    final String key = annotationName + annotation.annotationType().getName();
                     annotationRefMap.put(key, annotationRefOptional.get());
 
                     annotationSet.add(annotation);
@@ -170,7 +174,7 @@ public abstract class AbstractAnnotationTypeMeta implements AnnotationTypeMeta {
 
         Preconditions.checkNotNull(annotationName);
         Preconditions.checkNotNull(annotationRefName);
-        final String key = annotationName+annotationRefName;
+        final String key = annotationName + annotationRefName;
         return annotationRefMap.get(key);
     }
 
@@ -179,7 +183,7 @@ public abstract class AbstractAnnotationTypeMeta implements AnnotationTypeMeta {
         Preconditions.checkNotNull(annotationName);
 
         Annotation annotation = this.getAnnotation(annotationName);
-        if(Objects.isNull(annotation)) {
+        if (Objects.isNull(annotation)) {
             return null;
         }
 
@@ -191,7 +195,7 @@ public abstract class AbstractAnnotationTypeMeta implements AnnotationTypeMeta {
         Preconditions.checkNotNull(annotationName);
 
         List<Annotation> annotationList = this.getAnnotationOrRefs(annotationName);
-        if(CollectionUtils.isEmpty(annotationList)) {
+        if (CollectionUtils.isEmpty(annotationList)) {
             return null;
         }
 
@@ -206,7 +210,7 @@ public abstract class AbstractAnnotationTypeMeta implements AnnotationTypeMeta {
         Preconditions.checkNotNull(attrMethodName);
 
         Map<String, Object> attrMap = getAnnotationOrRefAttributes(annotationName);
-        if(MapUtils.isEmpty(attrMap)) {
+        if (MapUtils.isEmpty(attrMap)) {
             return null;
         }
 
@@ -228,7 +232,7 @@ public abstract class AbstractAnnotationTypeMeta implements AnnotationTypeMeta {
         Preconditions.checkNotNull(methodName);
 
         Annotation annotation = getAnnotation(clazz.getName());
-        if(Objects.nonNull(annotation)) {
+        if (Objects.nonNull(annotation)) {
             return getAnnotationAttr(annotation, methodName);
         }
 
@@ -241,13 +245,13 @@ public abstract class AbstractAnnotationTypeMeta implements AnnotationTypeMeta {
         Preconditions.checkNotNull(methodName);
         final String annotationName = clazz.getName();
 
-        if(ArrayUtils.isNotEmpty(getAnnotations())) {
-            for(Annotation annotation : getAnnotations()) {
+        if (ArrayUtils.isNotEmpty(getAnnotations())) {
+            for (Annotation annotation : getAnnotations()) {
                 Annotation[] annotationRefs = annotation.annotationType().getAnnotations();
 
-                if(ArrayUtils.isNotEmpty(annotationRefs)) {
-                    for(Annotation annotationRef : annotationRefs) {
-                        if(annotationName.equals(annotationRef.annotationType().getName())) {
+                if (ArrayUtils.isNotEmpty(annotationRefs)) {
+                    for (Annotation annotationRef : annotationRefs) {
+                        if (annotationName.equals(annotationRef.annotationType().getName())) {
                             return getAnnotationAttr(annotationRef, methodName);
                         }
                     }

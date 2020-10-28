@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.annotation;
 
@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author Kael He (kael.he@alo7.com)
+ * @author Kael He (h_fang8080@163.com)
  * 标记为组件（Bean）的注解
  * @since 11.0
  */

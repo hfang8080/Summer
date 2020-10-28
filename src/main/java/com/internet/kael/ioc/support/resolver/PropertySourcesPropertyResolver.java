@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.support.resolver;
 
@@ -10,31 +10,35 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @author Kael He(kael.he@alo7.com)
+ * @author Kael He(h_fang8080@163.com)
  * @since 21.0
  */
 public class PropertySourcesPropertyResolver implements ConfigurablePropertyResolver {
 
     /**
      * 前缀
+     *
      * @since 21.0
      */
     private String placeholderPrefix = "${";
 
     /**
      * 后缀
+     *
      * @since 21.0
      */
     private String placeholderSuffix = "}";
 
     /**
      * 分隔符
+     *
      * @since 21.0
      */
     private String valueSeparator = ":";
 
     /**
      * 可以遍历的资源信息
+     *
      * @since 21.0
      */
     private List<PropertyResource> propertyResources = Lists.newArrayList();
@@ -60,8 +64,8 @@ public class PropertySourcesPropertyResolver implements ConfigurablePropertyReso
 
     @Override
     public boolean containsProperty(String property) {
-        for(PropertyResource propertySource : propertyResources) {
-            if(propertySource.containsProperty(property)) {
+        for (PropertyResource propertySource : propertyResources) {
+            if (propertySource.containsProperty(property)) {
                 return true;
             }
         }
@@ -75,8 +79,8 @@ public class PropertySourcesPropertyResolver implements ConfigurablePropertyReso
 
     @Override
     public String getProperty(String key, String defaultValue) {
-        for(PropertyResource propertySource : propertyResources) {
-            if(propertySource.containsProperty(key)) {
+        for (PropertyResource propertySource : propertyResources) {
+            if (propertySource.containsProperty(key)) {
                 return (String) propertySource.getProperty(key);
             }
         }
@@ -86,7 +90,7 @@ public class PropertySourcesPropertyResolver implements ConfigurablePropertyReso
     @Override
     public String getRequiredProperty(String key) {
         String value = getProperty(key);
-        if(Objects.isNull(value)) {
+        if (Objects.isNull(value)) {
             throw new IocRuntimeException("Can't resolve property for key " + key);
         }
         return value;
@@ -105,12 +109,12 @@ public class PropertySourcesPropertyResolver implements ConfigurablePropertyReso
     }
 
     private String resolvePlaceholder(final String text, final boolean required) {
-        if(text.startsWith(placeholderPrefix) && text.endsWith(placeholderSuffix)) {
-            String placeholder = text.substring(2, text.length()-1);
+        if (text.startsWith(placeholderPrefix) && text.endsWith(placeholderSuffix)) {
+            String placeholder = text.substring(2, text.length() - 1);
 
             String[] strings = placeholder.split(valueSeparator);
             String key = strings[0];
-            if(strings.length == 1) {
+            if (strings.length == 1) {
                 // 断言必须存在
                 return getRequiredProperty(key);
             }

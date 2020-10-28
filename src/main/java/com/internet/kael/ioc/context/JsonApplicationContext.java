@@ -1,9 +1,8 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.context;
 
 import com.alibaba.fastjson.JSON;
-import com.internet.kael.ioc.core.BeanFactory;
 import com.internet.kael.ioc.model.BeanDefinition;
 import com.internet.kael.ioc.model.DefaultBeanDefinition;
 import com.internet.kael.ioc.util.ClassUtils;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @author Kael He(kael.he@alo7.com)
+ * @author Kael He(h_fang8080@163.com)
  * @since 1.0
  */
 public class JsonApplicationContext extends AbstractApplicationContext {
@@ -32,7 +31,9 @@ public class JsonApplicationContext extends AbstractApplicationContext {
     @Override
     protected List<BeanDefinition> buildBeanDefinitions() {
         InputStream in = ClassUtils.currentClassLoader().getResourceAsStream(fileName);
-        if (Objects.isNull(in)) return Collections.emptyList();
+        if (Objects.isNull(in)) {
+            return Collections.emptyList();
+        }
         try {
             // 读取配置文件文件，并转化成BeanDefinition对象
             String jsonConfig = IOUtils.toString(in);

@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.context;
 
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * @author Kael He (kael.he@alo7.com)
+ * @author Kael He (h_fang8080@163.com)
  * @since 11.0
  */
 public class AnnotationApplicationContextTest {

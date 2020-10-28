@@ -1,9 +1,9 @@
-// Copyright 2018 ALO7 Inc. All rights reserved.
+// Copyright 2018 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.util;
 
 /**
- * @author Kael He(kael.he@alo7.com)
+ * @author Kael He(h_fang8080@163.com)
  * @since 2.0
  */
 public class ThreadInterruptedException extends RuntimeException {

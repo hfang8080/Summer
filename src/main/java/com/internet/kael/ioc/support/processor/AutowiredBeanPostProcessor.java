@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.support.processor;
 
@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * 用来处理@Autowired注解需要注入的Bean
- * @author Kael He (kael.he@alo7.com)
+ * @author Kael He (h_fang8080@163.com)
  * @since 16.0
  */
 public class AutowiredBeanPostProcessor extends BeanPostProcessorAdaptor implements BeanFactoryAware {

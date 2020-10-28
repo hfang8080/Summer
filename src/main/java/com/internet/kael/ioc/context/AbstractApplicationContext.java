@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.context;
 
@@ -28,43 +28,49 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * @author Kael He (kael.he@alo7.com)
+ * @author Kael He (h_fang8080@163.com)
  * @since 4.0
  */
 public abstract class AbstractApplicationContext extends DefaultListableBeanFactory implements ApplicationContext {
 
     /**
      * 全部对象的定义Map
+     *
      * @since 9.0
      */
     private Map<String, BeanDefinition> beanDefinitionMap = Maps.newHashMap();
 
     /**
      * 子对象定义表
+     *
      * @since 9.0
      */
     private List<BeanDefinition> childrenBeanDefinitions = Lists.newArrayList();
 
     /**
      * 抽象的对象信息列表
+     *
      * @since 9.0
      */
     private List<BeanDefinition> abstractBeanDefinitions = Lists.newArrayList();
 
     /**
      * 可创建的定义；列表信息
+     *
      * @since 9.0
      */
     private List<BeanDefinition> creatableBeanDefinitions = Lists.newArrayList();
 
     /**
      * Bean依赖的检查器
+     *
      * @since 10.0
      */
     private BeanDependenceChecker beanDependenceChecker = new DefaultBeanDependenceChecker();
 
     /**
      * 定义一个环境的Bean定义
+     *
      * @since 20.0
      */
     private AnnotationBeanDefinition environmentBeanDefinition = buildEnvironmentBeanDefinition();
@@ -87,13 +93,14 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
 
     /**
      * 循环执行Bean信息处理
+     *
      * @param beanDefinitions Bean定义
      * @return BeanDefinitions
      * @since 8.0
      */
     private List<BeanDefinition> postProcessor(List<BeanDefinition> beanDefinitions) {
         List<ApplicationContextPostProcessor> processors = getBeans(ApplicationContextPostProcessor.class);
-        for(ApplicationContextPostProcessor processor: processors) {
+        for (ApplicationContextPostProcessor processor : processors) {
             beanDefinitions = processor.beforeRegister(beanDefinitions);
         }
         return beanDefinitions;
@@ -135,6 +142,7 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
 
     /**
      * 填充默认值
+     *
      * @param bd Bean定义
      * @since 4.0
      */
@@ -146,6 +154,7 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
 
     /**
      * 构建Bean定义的列表
+     *
      * @return Bean定义的列表
      * @since 4.0
      */
@@ -155,6 +164,7 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
      * 对象定义列表
      * （1）将 abstract 类型的 bean definition 区分开。
      * （2）对 parent 指定的 bean definition 进行属性赋值处理。
+     *
      * @param beanDefinitions 所有的对象列表
      * @since 0.0.9
      */
@@ -182,10 +192,10 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
         for (BeanDefinition child : childrenBeanDefinitions) {
             final String name = child.getName();
             final String parentName = child.getParentName();
-            if(StringUtils.isEmpty(name)) {
+            if (StringUtils.isEmpty(name)) {
                 throw new IocRuntimeException("name can not be empty!");
             }
-            if(name.equals(parentName)) {
+            if (name.equals(parentName)) {
                 throw new IocRuntimeException(name + " parent bean is ref to itself!");
             }
             BeanDefinition parentDefinition = beanDefinitionMap.get(parentName);
@@ -200,13 +210,14 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
     /**
      * 构建新子类的属性定义
      * 注意：
-     *      （1）为了简化，只继承property属性信息
-     *      （2）父类的属性，子类必须全部拥有，否则就会报错，暂时不做优化
+     * （1）为了简化，只继承property属性信息
+     * （2）父类的属性，子类必须全部拥有，否则就会报错，暂时不做优化
      * 核心流程：
-     *      （1）获取child的所有属性
-     *      （2）获取parent的所有属性
-     *      （3）进行过滤处理，相同以child为准
-     * @param child 子类的Bean定义
+     * （1）获取child的所有属性
+     * （2）获取parent的所有属性
+     * （3）进行过滤处理，相同以child为准
+     *
+     * @param child  子类的Bean定义
      * @param parent 父类的Bean定义
      * @return
      */
@@ -221,7 +232,9 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
         if (CollectionUtils.isNotEmpty(parentPropertyDefinitions)) {
             for (PropertyArgsDefinition parentPropertyArgsDefinition : parentPropertyDefinitions) {
                 String name = parentPropertyArgsDefinition.getName();
-                if (mapChildNameDefinition.containsKey(name)) continue;
+                if (mapChildNameDefinition.containsKey(name)) {
+                    continue;
+                }
                 // 如果child里面没有这个属性，则将这个属性也添加进来
                 childPropertyDefinitions.add(parentPropertyArgsDefinition);
             }

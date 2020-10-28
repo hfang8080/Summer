@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.util;
 
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * @author Kael He(kael.he@alo7.com)
+ * @author Kael He(h_fang8080@163.com)
  * @since 1.0
  */
 public class JsonMapperFactory {
@@ -57,5 +57,3 @@ public class JsonMapperFactory {
         return DEFAULT_JSON_MAPPER.getTypeFactory().constructType(type);
     }
 }
-
-

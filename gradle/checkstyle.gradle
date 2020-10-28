@@ -1,0 +1,25 @@
+apply plugin: 'checkstyle'
+
+checkstyle {
+    toolVersion = "5.9"
+}
+
+checkstyle.configFile = rootProject.file('gradle/config/checkstyle.xml')
+
+task checkstyle {
+    doLast {}
+}
+
+if (project.hasProperty('checkstyle.files')) {
+    def allFiles = project.property('checkstyle.files').split(',')
+    def javaFiles = allFiles.findAll { it.endsWith('.java') }
+    if (javaFiles) {
+        task checkstyleFiles(type: Checkstyle) {
+            classpath = files([])
+            source javaFiles
+        }
+        tasks.checkstyle.dependsOn tasks.checkstyleFiles
+    }
+} else {
+    tasks.checkstyle.dependsOn tasks.withType(Checkstyle)
+}

@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.support.condition;
 
@@ -7,7 +7,7 @@ import com.internet.kael.ioc.support.environment.EnvironmentCapable;
 import com.internet.kael.ioc.support.meta.AnnotationTypeMeta;
 
 /**
- * @author Kael He (kael.he@alo7.com)
+ * @author Kael He (h_fang8080@163.com)
  */
 public interface ConditionContext extends EnvironmentCapable {
     /**

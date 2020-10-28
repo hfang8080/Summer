@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.support.lifecycle.destroy;
 
@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * @author Kael He (kael.he@alo7.com)
+ * @author Kael He (h_fang8080@163.com)
  * @since 4.0
  */
 public class DefaultDisposableBean implements DisposableBean {
@@ -62,7 +62,9 @@ public class DefaultDisposableBean implements DisposableBean {
         Method method = null;
         try {
             method = instance.getClass().getMethod(destroyMethodName);
-            if (Objects.isNull(method)) return;
+            if (Objects.isNull(method)) {
+                return;
+            }
             ClassUtils.invokeNoArgsMethod(instance, method);
         } catch (NoSuchMethodException e) {
             throw new IocRuntimeException(e);

@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.core;
 
@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author Kael He(kael.he@alo7.com)
+ * @author Kael He(h_fang8080@163.com)
  * @since 1.0
  */
 public class DefaultBeanFactory implements BeanFactory, DisposableBean {
@@ -275,7 +275,6 @@ public class DefaultBeanFactory implements BeanFactory, DisposableBean {
             }
             primaryBeanClassNames.add(bd.getClassName());
             primaryBeanNameMap.put(getType(bd), beanName);
-            // TODO bean name 是唯一键的验证
         }
         if (!primaryBeanClassNames.contains(bd.getClassName())) {
             primaryBeanNameMap.put(getType(bd), beanName);

@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.support.lifecycle.create;
 
@@ -18,14 +18,14 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author Kael He (kael.he@alo7.com)
+ * @author Kael He (h_fang8080@163.com)
  * @since 12.0
  */
 public class ConfigurationMethodInstanceBean extends AbstractNewInstanceBean {
 
-    private static ConfigurationMethodInstanceBean INSTANCE = new ConfigurationMethodInstanceBean();
+    private static ConfigurationMethodInstanceBean instance = new ConfigurationMethodInstanceBean();
     public static ConfigurationMethodInstanceBean getInstance() {
-        return INSTANCE;
+        return instance;
     }
 
     @Override
