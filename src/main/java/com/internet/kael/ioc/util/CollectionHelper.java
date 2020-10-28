@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.util;
 
@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * @author Kael He(kael.he@alo7.com)
+ * @author Kael He(h_fang8080@163.com)
  * @since 2.0
  */
 public class CollectionHelper {
@@ -189,7 +189,7 @@ public class CollectionHelper {
     }
 
     public static <E, R, ERR extends Exception> List<R> callInBatches(List<E> list, int batchSize,
-                                                                      BatchCallerWithIndex<E, R, ERR> caller) throws ERR {
+            BatchCallerWithIndex<E, R, ERR> caller) throws ERR {
         if (CollectionUtils.isEmpty(list)) {
             return Collections.emptyList();
         }
@@ -207,7 +207,7 @@ public class CollectionHelper {
     }
 
     public static <E, R, ERR extends Exception> List<R> callInBatchesInParallel(List<E> list, int batchSize,
-                                                                                FutureBatchCaller<E, R, ERR> caller) throws ERR, ExecutionException, InterruptedException {
+            FutureBatchCaller<E, R, ERR> caller) throws ERR, ExecutionException, InterruptedException {
         if (CollectionUtils.isEmpty(list)) {
             return Collections.emptyList();
         }
@@ -228,7 +228,7 @@ public class CollectionHelper {
     }
 
     public static <E, R, ERR extends Exception> List<R> callInParallel(List<E> list,
-                                                                       final FutureCaller<E, R, ERR> caller) throws ERR, ExecutionException, InterruptedException {
+            final FutureCaller<E, R, ERR> caller) throws ERR, ExecutionException, InterruptedException {
         if (CollectionUtils.isEmpty(list)) {
             return Collections.emptyList();
         }
@@ -248,7 +248,7 @@ public class CollectionHelper {
     }
 
     public static <E, R, ERR extends Exception> void callInParallelQuietly(List<E> list,
-                                                                           final FutureCaller<E, R, ERR> caller) throws ERR {
+            final FutureCaller<E, R, ERR> caller) throws ERR {
         if (CollectionUtils.isEmpty(list)) {
             return;
         }

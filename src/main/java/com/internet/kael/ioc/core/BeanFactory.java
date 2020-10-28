@@ -1,11 +1,11 @@
-// Copyright 2019 ALO7 Inc. All rights reserved.
+// Copyright 2019 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.core;
 
 /**
  * Bean 工厂
  *
- * @author Kael He(kael.he@alo7.com)
+ * @author Kael He(h_fang8080@163.com)
  * @since 1.0
  */
 public interface BeanFactory {

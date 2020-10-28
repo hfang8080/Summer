@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.support.circle;
 
@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author Kael He(kael.he@alo7.com)
+ * @author Kael He(h_fang8080@163.com)
  * @since 10.0
  */
 public class DefaultBeanDependenceChecker implements BeanDependenceChecker {
@@ -26,17 +26,17 @@ public class DefaultBeanDependenceChecker implements BeanDependenceChecker {
      * 保存Bean及其依赖的映射关系
      * @since 10.0
      */
-    private static final Map<String, Set<String>> beanDependenciesMapping = Maps.newHashMap();
+    private static final Map<String, Set<String>> BEAN_DEPENDENCIES_MAPPING = Maps.newHashMap();
 
     /**
      * 保存Bean及其被依赖的关系
      * @since 10.0
      */
-    private static final Map<String, Set<String>> beanDependenceByMapping = Maps.newHashMap();
+    private static final Map<String, Set<String>> BEAN_DEPENDENCE_BY_MAPPING = Maps.newHashMap();
 
     @Override
     public boolean isCyclicDependence(String beanName) {
-        Set<String> dependencies = beanDependenciesMapping.get(beanName);
+        Set<String> dependencies = BEAN_DEPENDENCIES_MAPPING.get(beanName);
         if (CollectionUtils.isNotEmpty(dependencies)) {
             for (String dependence : dependencies) {
                 if (isCyclicDependence(beanName, dependence, null)) {
@@ -60,13 +60,13 @@ public class DefaultBeanDependenceChecker implements BeanDependenceChecker {
      * @since 10.0
      */
     private void buildDependenceByMapping() {
-        for (Map.Entry<String, Set<String>> entry : beanDependenciesMapping.entrySet()) {
+        for (Map.Entry<String, Set<String>> entry : BEAN_DEPENDENCIES_MAPPING.entrySet()) {
             Set<String> dependencies = entry.getValue();
             if (CollectionUtils.isNotEmpty(dependencies)) {
                 for (String dependence : dependencies) {
-                    Set<String> dependenciesBy = beanDependenceByMapping.getOrDefault(dependence, Sets.newHashSet());
+                    Set<String> dependenciesBy = BEAN_DEPENDENCE_BY_MAPPING.getOrDefault(dependence, Sets.newHashSet());
                     dependenciesBy.add(entry.getKey());
-                    beanDependenceByMapping.put(dependence, dependenciesBy);
+                    BEAN_DEPENDENCE_BY_MAPPING.put(dependence, dependenciesBy);
                 }
             }
         }
@@ -109,7 +109,7 @@ public class DefaultBeanDependenceChecker implements BeanDependenceChecker {
                 }
             }
         }
-        beanDependenciesMapping.put(bd.getName(), dependencies);
+        BEAN_DEPENDENCIES_MAPPING.put(bd.getName(), dependencies);
     }
 
     private boolean isCyclicDependence(String beanName, String dependence, Set<String> checked) {
@@ -121,7 +121,7 @@ public class DefaultBeanDependenceChecker implements BeanDependenceChecker {
         if (CollectionUtils.isNotEmpty(checked) && checked.contains(beanName)) {
             return false;
         }
-        Set<String> beanDependenceBy = beanDependenceByMapping.get(beanName);
+        Set<String> beanDependenceBy = BEAN_DEPENDENCE_BY_MAPPING.get(beanName);
         if (CollectionUtils.isEmpty(beanDependenceBy)) {
             return false;
         }

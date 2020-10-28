@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.annotation;
 
@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * （1）如果这个注解注释在类上，那么他将对该类和他包含的所有方法都将赋予这个属性。
  * （2）如果这个注解在一个方法上，则只有这个方法被赋予这个属性。
  * （3）如果标注在注解上，那么这个注解所标注的注解也将被赋予这个属性。
- * @author Kael He (kael.he@alo7.com)
+ * @author Kael He (h_fang8080@163.com)
  * @since 18.0
  */
 @Documented

@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.model;
 
@@ -14,7 +14,7 @@ package com.internet.kael.ioc.model;
  *  通过参数的索引位置进行默认映射。
  *  通过参数的name进行映射
  *
- * @author Kael He (kael.he@alo7.com)
+ * @author Kael He (h_fang8080@163.com)
  */
 public interface ConstructorArgsDefinition {
     /**

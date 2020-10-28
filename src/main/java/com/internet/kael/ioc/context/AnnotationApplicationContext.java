@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.context;
 
@@ -64,31 +64,36 @@ import java.util.stream.Stream;
 
 /**
  * 注解类型的应用上下文
- * @author Kael He (kael.he@alo7.com)
+ *
+ * @author Kael He (h_fang8080@163.com)
  * @since 11.0
  */
 public class AnnotationApplicationContext extends AbstractApplicationContext {
 
     /**
      * 配置类信息
+     *
      * @since 11.0
      */
     private final Class[] configClasses;
 
     /**
      * 环境
+     *
      * @since 19.0
      */
     private final Environment environment;
 
     /**
      * Bean名称的命名策略
+     *
      * @since 11.0
      */
     private BeanNameStrategy beanNameStrategy = new DefaultBeanNameStrategy();
 
     /**
      * 包扫描器
+     *
      * @since 22.0
      */
     private AnnotationBeanDefinitionScanner scanner = new ClassPathAnnotationBeanDefinitionScanner();
@@ -128,6 +133,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
     /**
      * 构建扫描对象集合
+     *
      * @param clazz 类
      * @since 22.0
      */
@@ -147,6 +153,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
     /**
      * 构建参数信息
+     *
      * @since 21.0
      */
     private List<PropertyArgsDefinition> buildConfigPropertyArgDefinitions(final Class clazz) {
@@ -172,6 +179,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
     /**
      * 构建属性对
+     *
      * @since 21.0
      */
     private List<PropertyResource> buildPropertyResource(final Class clazz) {
@@ -194,12 +202,13 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
     /**
      * 加载配置文件信息
+     *
      * @param path 路径
      * @return 结果
      * @since 0.1.10
      */
     private Properties getProperties(final String path) {
-        try(InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)){
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
             Properties properties = new Properties();
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
             properties.load(inputStreamReader);
@@ -211,6 +220,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
     /**
      * 获取所有的配置
+     *
      * @return 所有的配置类
      * @since 14.0
      */
@@ -224,8 +234,9 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
     /**
      * 增加所有的配置类
+     *
      * @param configurations 所有的配置信息
-     * @param configClass 配置类
+     * @param configClass    配置类
      * @since 14.0
      */
     private void addAllImportClass(final LinkedList<Class> configurations, final Class configClass) {
@@ -248,6 +259,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
     /**
      * 构建@Configuration类到Bean定义中
+     *
      * @param clazz 标注为@Configuration的类
      * @return Bean的定义
      */
@@ -321,6 +333,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
     /**
      * 类级别是否匹配
+     *
      * @param meta 判断条件是否匹配
      * @return 是否
      * @since 18.0

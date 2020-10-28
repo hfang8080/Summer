@@ -1,4 +1,4 @@
-// Copyright 2020 ALO7 Inc. All rights reserved.
+// Copyright 2020 EQUATION Inc. All rights reserved.
 
 package com.internet.kael.ioc.support.lifecycle.create;
 
@@ -6,7 +6,7 @@ import com.internet.kael.ioc.core.BeanFactory;
 import com.internet.kael.ioc.model.BeanDefinition;
 
 /**
- * @author Kael He (kael.he@alo7.com)
+ * @author Kael He (h_fang8080@163.com)
  * @since 6.0
  */
 public interface NewInstanceBean {

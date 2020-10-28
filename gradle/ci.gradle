@@ -1,0 +1,29 @@
+// Copyright 2018 EQUATION Inc. All rights reserved.
+
+if (project.hasProperty('ci')) {
+    def databaseNovaDatabase = project.hasProperty('databaseNovaDatabase') ? property('databaseNovaDatabase') : 'nova'
+    def databaseAofcDatabase = project.hasProperty('databaseAofcDatabase') ? property('databaseAofcDatabase') : 'aofc'
+    def databaseFeedDatabase = project.hasProperty('databaseFeedDatabase') ? property('databaseFeedDatabase') : 'feed'
+    def databaseRecommendDatabase = project.hasProperty('databaseRecommendDatabase') ? property('databaseRecommendDatabase') : 'recommend'
+
+    def databaseHost = project.hasProperty('databaseHost') ? property('databaseHost') :
+            'localhost'
+    def databasePort = project.hasProperty('databasePort') ? property('databasePort') :
+            '3306'
+    def databaseUser = project.hasProperty('databaseUser') ? property('databaseUser') :
+            'tester'
+    def databasePassword = project.hasProperty('databasePassword') ? property('databasePassword') :
+            'tester'
+
+    configure(allprojects) {
+        tasks.withType(Test) {
+            systemProperty 'database.novaMetricsDbUrl', "jdbc:mysql://$databaseHost:$databasePort/$databaseNovaDatabase?useUnicode=true&characterEncoding=UTF8&autoReconnect=true&useSSL=false"
+            systemProperty 'database.aofcDbUrl', "jdbc:mysql://$databaseHost:$databasePort/$databaseAofcDatabase?useUnicode=true&characterEncoding=UTF8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false"
+            systemProperty 'database.feedDbUrl', "jdbc:mysql://$databaseHost:$databasePort/$databaseFeedDatabase?useUnicode=true&characterEncoding=UTF8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false"
+            systemProperty 'database.recommendDbUrl', "jdbc:mysql://$databaseHost:$databasePort/$databaseRecommendDatabase?useUnicode=true&characterEncoding=UTF8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false"
+
+            systemProperty 'database.user', "$databaseUser"
+            systemProperty 'database.password', "$databasePassword"
+        }
+    }
+}

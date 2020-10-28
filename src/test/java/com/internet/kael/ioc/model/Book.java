@@ -1,7 +1,9 @@
+// Copyright 2020 EQUATION Inc. All rights reserved.
+
 package com.internet.kael.ioc.model;
 
 /**
- * @author Kael He (kael.he@alo7.com)
+ * @author Kael He (h_fang8080@163.com)
  * @since 0.0.9
  */
 public class Book {
