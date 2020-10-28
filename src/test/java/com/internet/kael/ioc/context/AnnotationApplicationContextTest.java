@@ -6,6 +6,8 @@ import com.internet.kael.ioc.bean.Apple;
 import com.internet.kael.ioc.bean.BookNamePrint;
 import com.internet.kael.ioc.config.AppAutoWiredListConfig;
 import com.internet.kael.ioc.config.AppAutowiredConfig;
+import com.internet.kael.ioc.config.AppComponentScanConfig;
+import com.internet.kael.ioc.config.AppComponentScanFilterConfig;
 import com.internet.kael.ioc.config.AppConditionConfig;
 import com.internet.kael.ioc.config.AppConfig;
 import com.internet.kael.ioc.config.AppEnvAutowiredConfig;
@@ -143,5 +145,14 @@ public class AnnotationApplicationContextTest {
                 .getBean("appPropertyResourceValueConfig", AppPropertyResourceValueConfig.class);
 
         Assert.assertEquals("hello", appPropertyResourceValueConfig.getName());
+    }
+
+    @Test
+    public void componentScan() {
+        AnnotationApplicationContext ac = new AnnotationApplicationContext(AppComponentScanConfig.class);
+        AnnotationApplicationContext ac2 = new AnnotationApplicationContext(AppComponentScanFilterConfig.class);
+        assertTrue(ac.containsBean("manager") && ac.containsBean("fooService"));
+        assertTrue(ac2.containsBean("manager") && !ac2.containsBean("fooService"));
+
     }
 }

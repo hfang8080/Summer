@@ -27,5 +27,11 @@ public enum BeanSourceType {
      * 用来支持Spring框架的运行
      * @since 20.0
      */
-    SUPPORT;
+    SUPPORT,
+    /**
+     * 组件信息
+     * @since 22.0
+     */
+    COMPONENT
+    ;
 }
